@@ -5,7 +5,7 @@ import type { Session } from 'next-auth';
 export const authConfig = {
   pages: {
     signIn: '/login',
-    newUser: '/',
+    newUser: '/chat',
   },
   providers: [],
   callbacks: {
