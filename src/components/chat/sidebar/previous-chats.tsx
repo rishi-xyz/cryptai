@@ -141,9 +141,7 @@ export const ChatItem = memo(PureChatItem, (prevProps, nextProps) => {
   return true;
 });
 
-const PreviousChat = ({ user }: {
-  user: User | undefined
-}) => {
+const PreviousChat = ({ user }: { user: User | undefined }) => {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
   //get chat id from params

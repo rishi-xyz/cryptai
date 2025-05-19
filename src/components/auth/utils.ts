@@ -1,9 +1,9 @@
-"use server"
+'use server';
 
-import { signOut } from "@/app/(auth)/auth"
+import { signOut } from '@/app/(auth)/auth';
 
-export const handleSignout = async()=> {
-    await signOut({
-        redirectTo:"/"
-    })
-}
+export const handleSignout = async () => {
+  await signOut({
+    redirectTo: '/',
+  });
+};
