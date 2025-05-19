@@ -13,7 +13,6 @@ import {
 } from '../../ui/sidebar';
 import useSWR from 'swr';
 import { Chat } from '@/prisma/generated/prisma';
-import { useSession } from 'next-auth/react';
 import { dataFetcher } from '@/src/lib/utils';
 import { memo, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -50,6 +49,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../../ui/alert-dialog';
+import { User } from 'next-auth';
+import { Skeleton } from '../../ui/skeleton';
 
 const PureChatItem = ({
   chat,
@@ -140,10 +141,9 @@ export const ChatItem = memo(PureChatItem, (prevProps, nextProps) => {
   return true;
 });
 
-const PreviousChat = () => {
-  //get user
-  const { data: session } = useSession();
-  const user = session?.user;
+const PreviousChat = ({ user }: {
+  user: User | undefined
+}) => {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
   //get chat id from params
@@ -154,6 +154,7 @@ const PreviousChat = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   //set dialog for deleting
   const [DeleteDialog, setDeleteDialog] = useState(false);
+  const skeletonCount = Math.floor(Math.random() * 4) + 2;
   //swr for data fetching , empty array as fallback
   const {
     data: history,
@@ -237,10 +238,18 @@ const PreviousChat = () => {
   if (isLoading) {
     return (
       <SidebarGroup>
-        <SidebarGroupContent>
-          <div className="flex w-full flex-row items-center justify-center gap-2 px-2 text-sm text-zinc-500">
-            Loading...
-          </div>
+        <SidebarGroupContent className="flex flex-col items-center justify-center space-y-4">
+          {[...Array(skeletonCount)].map((_, idx) => (
+            <div key={idx} className="flex flex-col items-center space-y-2">
+              <Skeleton className="h-6 w-32 bg-gray-200/15" />
+              <div className="flex items-center space-x-4">
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-10 bg-gray-200/10" />
+                  <Skeleton className="h-3 w-10 bg-gray-200/10" />
+                </div>
+              </div>
+            </div>
+          ))}
         </SidebarGroupContent>
       </SidebarGroup>
     );

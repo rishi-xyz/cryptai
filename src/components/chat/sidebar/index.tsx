@@ -9,8 +9,9 @@ import Link from 'next/link';
 import { NewChatButton } from './new-chat-button';
 import { PreviousChat } from './previous-chats';
 import { SignOutPopOver } from './sign-out-popover';
+import { User } from 'next-auth';
 
-export async function AppSidebar() {
+export async function AppSidebar({ user }: { user: User | undefined }) {
   return (
     <Sidebar className="rounded-2xl">
       <SidebarHeader className="mt-3 flex items-center justify-center text-center">
@@ -26,11 +27,11 @@ export async function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup className="flex gap-y-3">
-          <PreviousChat />
+          <PreviousChat user={user} />
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SignOutPopOver />
+        <SignOutPopOver user={user} />
       </SidebarFooter>
     </Sidebar>
   );

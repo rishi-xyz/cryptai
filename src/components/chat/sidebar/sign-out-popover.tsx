@@ -4,12 +4,11 @@ import Image from 'next/image';
 import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover';
 import { SidebarMenu, SidebarMenuItem } from '../../ui/sidebar';
 import { Button } from '../../ui/button';
-import { signOut, useSession } from 'next-auth/react';
 import { LogOut } from 'lucide-react';
+import { User } from 'next-auth';
+import { handleSignout } from '../../auth/utils';
 
-export const SignOutPopOver = () => {
-  const { data: session } = useSession();
-  const user = session?.user ?? null;
+export const SignOutPopOver = ({ user }: { user: User | undefined }) => {
   return user ? (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -18,13 +17,15 @@ export const SignOutPopOver = () => {
             <Popover>
               <PopoverTrigger>
                 <Button className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer">
-                  <Image
-                    src={`${user.image}`}
-                    alt="user Image"
-                    width={30}
-                    height={30}
-                    className="rounded-full"
-                  />
+                  {user.image && (
+                    <Image
+                      src={user.image}
+                      alt="user Image"
+                      width={30}
+                      height={30}
+                      className="rounded-full"
+                    />
+                  )}
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                     <span className="truncate font-semibold">{user.name}</span>
                     <span className="truncate text-white/15">{user.email}</span>
@@ -33,13 +34,15 @@ export const SignOutPopOver = () => {
               </PopoverTrigger>
               <PopoverContent className="h-36 bg-gradient-to-r from-orange-400 to-violet-400">
                 <div className="grid flex-1 text-left text-base leading-tight text-black group-data-[collapsible=icon]:hidden">
-                  <Image
-                    src={`${user.image}`}
-                    alt="user Image"
-                    width={30}
-                    height={30}
-                    className="rounded-2xl"
-                  />
+                  {user.image && (
+                    <Image
+                      src={user.image}
+                      alt="user Image"
+                      width={30}
+                      height={30}
+                      className="rounded-full"
+                    />
+                  )}
                   <span className="truncate font-semibold">{user.name}</span>
                   <span className="truncate text-black/70">{user.email}</span>
                 </div>
@@ -47,7 +50,7 @@ export const SignOutPopOver = () => {
                   variant={'fushia'}
                   size={'default'}
                   className="mt-2"
-                  onClick={() => signOut({ callbackUrl: '/login' })}
+                  onClick={handleSignout}
                 >
                   <LogOut />
                   <span>Sign Out</span>
