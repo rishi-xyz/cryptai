@@ -1,4 +1,4 @@
-import { Chat } from "@/prisma/generated/prisma";
+import { Chat } from '@/prisma/generated/prisma';
 
 export type GroupedChats = {
   today: Chat[];

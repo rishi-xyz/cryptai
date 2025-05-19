@@ -5,7 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-
 export const dataFetcher = async (url: string) => {
   const res = await fetch(url);
   if (!res.ok) {

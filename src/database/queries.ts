@@ -1,6 +1,6 @@
-import { User } from "@/prisma/generated/prisma";
-import { client } from "./prisma";
-import { genSaltSync, hashSync } from "bcrypt-ts";
+import { User } from '@/prisma/generated/prisma';
+import { client } from './prisma';
+import { genSaltSync, hashSync } from 'bcrypt-ts';
 
 export async function updateChatVisiblityById({
   chatId,

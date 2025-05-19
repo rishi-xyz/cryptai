@@ -1,5 +1,5 @@
-import { updateChatVisiblityById } from "@/src/database/queries";
-import { VisibilityType } from "@/src/types/visibility";
+import { updateChatVisiblityById } from '@/src/database/queries';
+import { VisibilityType } from '@/src/types/visibility';
 
 export async function updateChatVisibility({
   chatId,

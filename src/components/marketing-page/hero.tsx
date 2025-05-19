@@ -21,7 +21,7 @@ export const MarketingHero = () => {
         </p>
         <div className="z-0 mt-20 flex justify-center">
           <div className="inset-0 rounded-2xl outline-2 outline-offset-2 outline-fuchsia-500/30 hover:bg-fuchsia-500/30">
-            <Link href={'/callback'}>
+            <Link href={'/chat'}>
               <Button
                 variant={'fushia'}
                 size={'default'}

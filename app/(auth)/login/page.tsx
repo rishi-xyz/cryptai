@@ -9,32 +9,29 @@ import { signIn } from 'next-auth/react';
 import { AuthForm } from '@/src/components/auth/auth-form';
 import { SubmitButton } from '@/src/components/auth/submit-button';
 
-import { register, RegisterActionState } from '@/app/(auth)/actions';
+import { login, LoginActionState } from '@/app/(auth)/actions';
 import { Button } from '@/src/components/ui/button';
 import { Hexagon } from '@/src/components/globals/hexagon';
 
 export default function Page() {
   const router = useRouter();
   const [email, setEmail] = useState('');
-  const [state, formAction] = useActionState<RegisterActionState, FormData>(
-    register,
+  const [state, formAction] = useActionState<LoginActionState, FormData>(
+    login,
     {
       status: 'idle',
     },
   );
 
   useEffect(() => {
-    if (state.status === 'user_exists') {
-      toast.error('Account already exists');
-    } else if (state.status === 'failed') {
-      toast.error('Failed to create account');
+    if (state.status === 'failed') {
+      toast.error('Invalid credentials!');
     } else if (state.status === 'invalid_data') {
       toast.error('Failed validating your submission!');
     } else if (state.status === 'success') {
-      toast.success('Account created successfully');
       router.refresh();
     }
-  }, [state, router]);
+  }, [state.status, router]);
 
   const handleSubmit = (formData: FormData) => {
     setEmail(formData.get('email') as string);
@@ -53,11 +50,9 @@ export default function Page() {
         <div className="relative z-10 flex min-h-screen items-center justify-center px-4 sm:px-12">
           <div className="w-full max-w-md rounded-2xl bg-black/30 p-6 shadow-lg backdrop-blur-lg sm:p-8">
             <div className="flex flex-col items-center justify-center gap-2 text-center">
-              <h3 className="text-xl font-semibold dark:text-zinc-50">
-                Sign Up
-              </h3>
+              <h3 className="text-xl font-semibold dark:text-zinc-50">Login</h3>
               <p className="text-sm text-gray-500 dark:text-zinc-400">
-                Create an account on CryptAI
+                Login into CryptAI
               </p>
             </div>
 
@@ -68,14 +63,14 @@ export default function Page() {
                 variant="fushia"
                 className="border-2 border-fuchsia-500/30 hover:border-fuchsia-500 hover:bg-fuchsia-500/30"
               >
-                Sign up with Google
+                Login with Google
               </Button>
               <Button
                 onClick={() => signIn('github')}
                 variant="fushia"
                 className="border-2 border-fuchsia-500/30 hover:border-fuchsia-500 hover:bg-fuchsia-500/30"
               >
-                Sign up with GitHub
+                Login with GitHub
               </Button>
             </div>
 
@@ -88,14 +83,14 @@ export default function Page() {
 
             {/* Auth form */}
             <AuthForm action={handleSubmit} defaultEmail={email}>
-              <SubmitButton>Sign Up</SubmitButton>
+              <SubmitButton>Login</SubmitButton>
               <p className="mt-4 text-center text-sm text-white dark:text-zinc-400">
                 {'Already have an account? '}
                 <Link
-                  href="/login"
+                  href="/register"
                   className="font-semibold text-fuchsia-500 hover:underline dark:text-zinc-200"
                 >
-                  Sign in
+                  Sign up
                 </Link>{' '}
                 instead.
               </p>

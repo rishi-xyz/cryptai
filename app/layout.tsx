@@ -24,7 +24,7 @@ export default function RootLayout({
         className={`${manrope.variable} antialiased`}
         suppressHydrationWarning
       >
-        <Toaster position={"top-right"} />
+        <Toaster position={'top-right'} />
         {children}
       </body>
     </html>
