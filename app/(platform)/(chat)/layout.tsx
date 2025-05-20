@@ -1,5 +1,5 @@
 import { auth } from '@/app/(auth)/auth';
-import { AppSidebar } from '@/src/components/chat/sidebar';
+import { AppSidebar } from '@/src/components/platform/sidebar';
 import { SidebarInset, SidebarProvider } from '@/src/components/ui/sidebar';
 import { cookies } from 'next/headers';
 import React from 'react';

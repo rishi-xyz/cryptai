@@ -1,0 +1,46 @@
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import Image from 'next/image';
+
+export const Overview = () => {
+  return (
+    <motion.div
+      key="overview"
+      className="mx-4 mt-20 max-w-[500px] md:mx-0"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ delay: 0.5 }}
+    >
+      <div className="bg-muted/50 flex flex-col gap-4 rounded-2xl border-none p-6 text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+        <p className="flex flex-row items-center justify-center gap-4 text-zinc-900 dark:text-zinc-50">
+          <Image src={'./robot.png'} alt="CryptAI" />
+        </p>
+        <p>
+          Welcome to CryptAI an open source Chatbot to chat with SUI blockchain
+          powered by the Google Gemini model built with
+          <code className="bg-muted-foreground/15 rounded-sm px-1.5 py-0.5">
+            Nextjs
+          </code>{' '}
+          and{' '}
+          <code className="bg-muted-foreground/15 rounded-sm px-1.5 py-0.5">
+            Vercel AI SDK
+          </code>{' '}
+          to create a seamless chat experience.
+        </p>
+        <p>
+          {' '}
+          Learn more about{' '}
+          <Link
+            className="text-blue-500 dark:text-blue-400"
+            href="https://sdk.vercel.ai/docs"
+            target="_blank"
+          >
+            CrypAI
+          </Link>
+          .
+        </p>
+      </div>
+    </motion.div>
+  );
+};

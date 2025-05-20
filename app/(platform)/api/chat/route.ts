@@ -1,0 +1,50 @@
+import { auth } from '@/app/(auth)/auth';
+import { geminiProModel } from '@/src/ai';
+import { Suitools } from '@/src/ai/tools';
+import { saveChat } from '@/src/database/queries';
+import { convertToCoreMessages, Message, streamText } from 'ai';
+
+export async function POST(request: Request) {
+  const { id, messages }: { id: string; messages: Array<Message> } =
+    await request.json();
+
+  const session = await auth();
+
+  if (!session) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const coreMessages = convertToCoreMessages(messages).filter(
+    (message) => message.content.length > 0,
+  );
+
+  const result = await streamText({
+    model: geminiProModel,
+    system: `\n
+         - You are a gemini chat bot made to talk with users
+         - be very kind and respectful to the users 
+        '
+      `,
+    messages: coreMessages,
+    onFinish: async ({ responseMessages }: any) => {
+      if (session.user && session.user.id) {
+        try {
+          await saveChat({
+            id,
+            messages: [...coreMessages, ...responseMessages],
+            userId: session.user.id,
+          });
+        } catch (error) {
+          console.error('Failed to save chat', error);
+        }
+      }
+    },
+    tools: Suitools,
+    experimental_telemetry: {
+      isEnabled: true,
+      functionId: 'stream-text',
+    },
+  });
+
+  return result.toDataStreamResponse({});
+}
