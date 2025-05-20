@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import robotImage from '@/public/robot.png';
 
 export const Overview = () => {
   return (
@@ -14,7 +15,7 @@ export const Overview = () => {
     >
       <div className="bg-muted/50 flex flex-col gap-4 rounded-2xl border-none p-6 text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
         <p className="flex flex-row items-center justify-center gap-4 text-zinc-900 dark:text-zinc-50">
-          <Image src={'./robot.png'} alt="CryptAI" />
+          <Image src={robotImage} alt="CryptAI" width={10} height={10} />
         </p>
         <p>
           Welcome to CryptAI an open source Chatbot to chat with SUI blockchain

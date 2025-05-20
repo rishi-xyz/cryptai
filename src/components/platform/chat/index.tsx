@@ -7,13 +7,18 @@ import { useState } from 'react';
 import { Overview } from './overview';
 import { ViewMessages } from './view-messages';
 import { MultimodalInput } from './multimodalinput';
+import { ChatHeader } from './chat-header';
 
 export function Chat({
   id,
   initialMessages,
+  selectedModelId,
+  isReadonly,
 }: {
   id: string;
   initialMessages: Array<Message>;
+  selectedModelId: string;
+  isReadonly: boolean;
 }) {
   const { messages, handleSubmit, input, setInput, append, isLoading, stop } =
     useChat({
@@ -31,8 +36,12 @@ export function Chat({
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
   return (
-    <div className="bg-background flex h-dvh flex-row justify-center pb-4 md:pb-8">
-      <div className="flex flex-col items-center justify-between gap-4">
+    <div className="bg-background flex h-dvh flex-col justify-between pb-4 md:pb-8">
+      {/* Full-width header at the top */}
+      <ChatHeader selectedModelId={selectedModelId} isReadonly={isReadonly} />
+
+      {/* Scrollable message + input container */}
+      <div className="flex flex-1 flex-col items-center justify-between gap-4">
         <div
           ref={messagesContainerRef}
           className="flex h-full w-dvw flex-col items-center gap-4 overflow-y-scroll"

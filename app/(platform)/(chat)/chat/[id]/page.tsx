@@ -6,9 +6,16 @@ import { getChatById } from '@/src/database/queries';
 import { convertToUIMessages } from '@/src/lib/utils';
 import { Chat } from '@/prisma/generated/prisma';
 import { Chat as ViewChat } from '@/src/components/platform/chat';
+import { cookies } from 'next/headers';
+import { DEFAULT_MODEL_NAME, models } from '@/src/ai/models';
 
 export default async function Page({ params }: { params: any }) {
   const { id } = params;
+  const cookieStore = await cookies();
+  const modelIdFromCookie = cookieStore.get('model-id')?.value;
+  const selectedModelId =
+    models.find((model) => model.id === modelIdFromCookie)?.id ||
+    DEFAULT_MODEL_NAME;
   const chatFromDb = await getChatById({ id });
 
   if (!chatFromDb) {
@@ -36,5 +43,12 @@ export default async function Page({ params }: { params: any }) {
   const parsedMessage =
     typeof chat.messages === 'string' ? JSON.parse(chat.messages) : null;
 
-  return <ViewChat id={chat.id} initialMessages={parsedMessage} />;
+  return (
+    <ViewChat
+      id={chat.id}
+      initialMessages={parsedMessage}
+      selectedModelId={selectedModelId}
+      isReadonly={session.user.id !== chatFromDb.userId}
+    />
+  );
 }
