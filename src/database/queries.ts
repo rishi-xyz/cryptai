@@ -46,6 +46,16 @@ export async function createUser(email: string, password: string) {
   }
 }
 
+export async function createUserWithOauth(email: string) {
+  const salt = genSaltSync(10);
+  try {
+    return await client.user.create({ data: { email } });
+  } catch (error) {
+    console.error('Failed to create user in database', error);
+    throw error;
+  }
+}
+
 export async function getChatsByUserId({ id }: { id: string }) {
   try {
     return await client.chat.findMany({
@@ -90,6 +100,13 @@ export async function saveChat({
     if (chatExists) {
       return await client.chat.update({ where: { id }, data: { messages } });
     }
+
+    const user = await client.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      console.error(`User with ID ${userId} does not exist.`);
+      throw new Error(`Cannot create chat: User not found.`);
+    }
+
     return await client.chat.create({
       data: {
         id,

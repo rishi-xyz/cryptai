@@ -5,9 +5,7 @@ import { saveChat } from '@/src/database/queries';
 import { convertToCoreMessages, Message, streamText } from 'ai';
 
 export async function POST(request: Request) {
-  const { id, messages }: { id: string; messages: Array<Message> } =
-    await request.json();
-  console.log('here', messages);
+  const { id, messages }: { id: string; messages: Array<Message> } = await request.json();
 
   const session = await auth();
 
@@ -27,12 +25,12 @@ export async function POST(request: Request) {
         '
       `,
     messages: coreMessages,
-    onFinish: async ({ responseMessages }: any) => {
+    onFinish: async ({ response }) => {
       if (session.user && session.user.id) {
         try {
           await saveChat({
             id,
-            messages: [...coreMessages, ...responseMessages],
+            messages: [...coreMessages, ...response.messages],
             userId: session.user.id,
           });
         } catch (error) {

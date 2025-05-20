@@ -3,7 +3,7 @@ import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 import { authConfig } from './auth.config';
-import { getUser } from '@/src/database/queries';
+import { createUser, createUserWithOauth, getUser } from '@/src/database/queries';
 import {
   ExtendedSession,
   ExtendedUser,
@@ -37,13 +37,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   secret: process.env.AUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
+    async jwt({ token, user, account }) {
+    if (user && account?.provider !== 'credentials') {
+      const [existingUser] = await getUser(user.email!);
+
+      if (!existingUser) {
+        // Save the new OAuth user to the DB
+        await createUserWithOauth(user.email!);
       }
 
-      return token;
-    },
+      token.id = existingUser?.id ?? user.id;
+    } else if (user) {
+      token.id = user.id;
+    }
+
+    return token;
+  },
     async session({ session, token }) {
       (session.user as ExtendedUser).id = token.id as string;
       return session as ExtendedSession;
