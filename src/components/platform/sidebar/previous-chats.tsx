@@ -158,7 +158,7 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
     data: history,
     isLoading,
     mutate,
-  } = useSWR<Array<Chat>>(user ? `/api/chat/history` : null, dataFetcher, {
+  } = useSWR<Array<Chat>>(user ? `/api/history` : null, dataFetcher, {
     fallbackData: [],
   });
   //refresh every time site loads and reloads
@@ -198,7 +198,7 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
   };
 
   const handleDelete = async () => {
-    const deleteHandle = fetch(`/api/chat/delete?id=${deletingId}`, {
+    const deleteHandle = fetch(`/api/delete?id=${deletingId}`, {
       method: 'DELETE',
     });
     //await toast on response of call

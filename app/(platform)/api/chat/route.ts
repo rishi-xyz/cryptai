@@ -7,6 +7,7 @@ import { convertToCoreMessages, Message, streamText } from 'ai';
 export async function POST(request: Request) {
   const { id, messages }: { id: string; messages: Array<Message> } =
     await request.json();
+  console.log('here', messages);
 
   const session = await auth();
 

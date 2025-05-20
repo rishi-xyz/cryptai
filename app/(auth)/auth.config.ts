@@ -12,6 +12,12 @@ export const authConfig = {
       const isOnChat = nextUrl.pathname.startsWith('/chat');
       const isOnRegister = nextUrl.pathname.startsWith('/register');
       const isOnLogin = nextUrl.pathname.startsWith('/login');
+      const isApiRoute = nextUrl.pathname.startsWith('/api');
+
+      if (isApiRoute) {
+        // ✅ Always allow the request and let the API route handle auth
+        return true;
+      }
 
       if (isLoggedIn && (isOnLogin || isOnRegister)) {
         return Response.redirect(new URL('/', nextUrl));

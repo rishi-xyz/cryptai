@@ -13,7 +13,7 @@ import React, {
 } from 'react';
 import { toast } from 'sonner';
 
-import { ArrowUpIcon, PaperclipIcon, StopCircleIcon } from 'lucide-react';
+import { ArrowUpIcon, PaperclipIcon, StopCircle } from 'lucide-react';
 import { PreviewAttachment } from './preview-attachment';
 import useWindowSize from '@/src/hooks/use-window-size';
 import { Button } from '../../ui/button';
@@ -121,7 +121,6 @@ export function MultimodalInput({
         toast.error(error);
       }
     } catch (error) {
-      console.error(error);
       toast.error('Failed to upload file, please try again!');
     }
   };
@@ -243,7 +242,7 @@ export function MultimodalInput({
             stop();
           }}
         >
-          <StopCircleIcon size={14} />
+          <StopCircle size={14} />
         </Button>
       ) : (
         <Button
