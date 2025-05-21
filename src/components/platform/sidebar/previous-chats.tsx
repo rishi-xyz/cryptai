@@ -18,27 +18,14 @@ import { memo, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { GroupedChats } from '@/src/types/grouped-chats';
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
-import { useChatVisibility } from '@/src/hooks/use-chat-visibility';
 import Link from 'next/link';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '../../ui/dropdown-menu';
-import {
-  CheckCheckIcon,
-  CheckCircle2Icon,
-  GlobeIcon,
-  LockIcon,
-  MoreHorizontalIcon,
-  ShareIcon,
-  TrashIcon,
-} from 'lucide-react';
+import { MoreHorizontalIcon, PencilLineIcon, TrashIcon } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,18 +43,15 @@ const PureChatItem = ({
   chat,
   isActive,
   onDelete,
+  onRename,
   setOpenMobile,
 }: {
   chat: Chat;
   isActive: boolean;
   onDelete: (chatId: string) => void;
+  onRename: (chatId: string) => void;
   setOpenMobile: (open: boolean) => void;
 }) => {
-  const { visibilityType, setVisibilityType } = useChatVisibility({
-    chatId: chat.id,
-    initialVisibility: chat.visibility,
-  });
-
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive}>
@@ -77,7 +61,7 @@ const PureChatItem = ({
       </SidebarMenuButton>
 
       <DropdownMenu modal={true}>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger asChild className="cursor-pointer">
           <SidebarMenuAction
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground mr-0.5"
             showOnHover={!isActive}
@@ -88,43 +72,15 @@ const PureChatItem = ({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent side="bottom" align="end">
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="cursor-pointer">
-              <ShareIcon />
-              <span>Share</span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem
-                  className="cursor-pointer flex-row justify-between"
-                  onClick={() => {
-                    setVisibilityType('private');
-                  }}
-                >
-                  <div className="flex flex-row items-center gap-2">
-                    <LockIcon size={12} />
-                    <span>Private</span>
-                  </div>
-                  {visibilityType === 'private' ? <CheckCircle2Icon /> : null}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer flex-row justify-between"
-                  onClick={() => {
-                    setVisibilityType('public');
-                  }}
-                >
-                  <div className="flex flex-row items-center gap-2">
-                    <GlobeIcon />
-                    <span>Public</span>
-                  </div>
-                  {visibilityType === 'public' ? <CheckCheckIcon /> : null}
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-
           <DropdownMenuItem
-            className="text-destructive focus:bg-destructive/15 focus:text-destructive cursor-pointer dark:text-red-500"
+            className="cursor-pointer"
+            onSelect={() => onRename(chat.id)}
+          >
+            <PencilLineIcon />
+            <span>Rename</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="focus:bg-destructive/15 focus:text-destructive cursor-pointer text-red-500"
             onSelect={() => onDelete(chat.id)}
           >
             <TrashIcon />
@@ -150,8 +106,15 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
   const pathname = usePathname();
   //set id to delete
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  //set id to rename
+  const [renamingId, setRenamingId] = useState<string | null>(null);
   //set dialog for deleting
   const [DeleteDialog, setDeleteDialog] = useState(false);
+  //set dialog for renaming
+  const [renameDialog, setRenameDialog] = useState(false);
+  //rename title
+  const [renameTitle, setRenameTitle] = useState<string>('');
+
   const skeletonCount = Math.floor(Math.random() * 4) + 2;
   //swr for data fetching , empty array as fallback
   const {
@@ -207,7 +170,7 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
       success: () => {
         mutate((history) => {
           if (history) {
-            return history.filter((h) => h.id !== chatId);
+            return history.filter((h) => h.id !== deletingId);
           }
         });
         return 'Chat deleted sucessfully';
@@ -219,6 +182,26 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
     if (deletingId === chatId) {
       router.push('/chat');
     }
+  };
+  const handleRename = async () => {
+    const renameHandle = fetch(`/api/rename?id=${renamingId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ newTitle: renameTitle }),
+    });
+
+    toast.promise(renameHandle, {
+      loading: 'Renaming Chat...',
+      success: () => {
+        mutate((history) => {
+          if (history) {
+            return history.filter((h) => h.id !== chatId);
+          }
+        });
+        return 'Chat Renamed sucessfully';
+      },
+      error: 'Failed to rename chat',
+    });
+    setRenameDialog(false);
   };
   //if user hasn't logged in
   if (!user) {
@@ -291,6 +274,11 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
                             key={chat.id}
                             chat={chat}
                             isActive={chat.id === chatId}
+                            onRename={(chatId: string) => {
+                              setRenameTitle(chat.title);
+                              setRenamingId(chatId);
+                              setRenameDialog(true);
+                            }}
                             onDelete={(chatId: string) => {
                               setDeletingId(chatId);
                               setDeleteDialog(true);
@@ -311,6 +299,11 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
                             key={chat.id}
                             chat={chat}
                             isActive={chat.id === chatId}
+                            onRename={(chatId: string) => {
+                              setRenameTitle(chat.title);
+                              setRenamingId(chatId);
+                              setRenameDialog(true);
+                            }}
                             onDelete={(chatId) => {
                               setDeletingId(chatId);
                               setDeleteDialog(true);
@@ -331,6 +324,11 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
                             key={chat.id}
                             chat={chat}
                             isActive={chat.id === chatId}
+                            onRename={(chatId: string) => {
+                              setRenameTitle(chat.title);
+                              setRenamingId(chatId);
+                              setRenameDialog(true);
+                            }}
                             onDelete={(chatId) => {
                               setDeletingId(chatId);
                               setDeleteDialog(true);
@@ -351,6 +349,11 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
                             key={chat.id}
                             chat={chat}
                             isActive={chat.id === chatId}
+                            onRename={(chatId: string) => {
+                              setRenameTitle(chat.title);
+                              setRenamingId(chatId);
+                              setRenameDialog(true);
+                            }}
                             onDelete={(chatId) => {
                               setDeletingId(chatId);
                               setDeleteDialog(true);
@@ -371,6 +374,11 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
                             key={chat.id}
                             chat={chat}
                             isActive={chat.id === chatId}
+                            onRename={(chatId: string) => {
+                              setRenameTitle(chat.title);
+                              setRenamingId(chatId);
+                              setRenameDialog(true);
+                            }}
                             onDelete={(chatId) => {
                               setDeletingId(chatId);
                               setDeleteDialog(true);
@@ -386,6 +394,27 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
+      {/* Rename Dialog */}
+      <AlertDialog open={renameDialog} onOpenChange={setRenameDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Rename Chat</AlertDialogTitle>
+            <AlertDialogDescription>
+              Enter a new name for this chat.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <input
+            className="mt-2 w-full rounded border p-2"
+            value={renameTitle}
+            onChange={(e) => setRenameTitle(e.target.value)}
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleRename}>Rename</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <AlertDialog open={DeleteDialog} onOpenChange={setDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>

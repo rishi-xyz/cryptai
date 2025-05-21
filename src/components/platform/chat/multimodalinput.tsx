@@ -121,7 +121,9 @@ export function MultimodalInput({
         toast.error(error);
       }
     } catch (error) {
-      toast.error('Failed to upload file, please try again!');
+      toast.error('Failed to upload file, please try again!', {
+        description: `Error:${error}`,
+      });
     }
   };
 

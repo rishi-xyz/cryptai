@@ -3,7 +3,7 @@ import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 import { authConfig } from './auth.config';
-import { createUser, createUserWithOauth, getUser } from '@/src/database/queries';
+import { createUserWithOauth, getUser } from '@/src/database/queries';
 import {
   ExtendedSession,
   ExtendedUser,
@@ -19,11 +19,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const users = await getUser(email);
         if (users.length === 0) return null;
 
-        // biome-ignore lint: Forbidden non-null assertion.
-        const passwordsMatch = await compare(password, users[0].password!);
+        const user = users[0];
+        const passwordsMatch = await compare(password, user.password!);
         if (!passwordsMatch) return null;
 
-        return users[0] as any;
+        return {
+          id: user.id, // ensure id matches DB
+          email: user.email,
+        };
       },
     }),
     GoogleProvider({
@@ -38,21 +41,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET,
   callbacks: {
     async jwt({ token, user, account }) {
-    if (user && account?.provider !== 'credentials') {
-      const [existingUser] = await getUser(user.email!);
+      if (user && account?.provider !== 'credentials') {
+        const [existingUser] = await getUser(user.email!);
 
-      if (!existingUser) {
-        // Save the new OAuth user to the DB
-        await createUserWithOauth(user.email!);
+        if (!existingUser) {
+          const newUser = await createUserWithOauth(user.email!);
+          token.id = newUser.id; // set from DB
+        } else {
+          token.id = existingUser.id; //  set from DB
+        }
+      } else if (user) {
+        token.id = user.id; //  from credentials authorize()
       }
 
-      token.id = existingUser?.id ?? user.id;
-    } else if (user) {
-      token.id = user.id;
-    }
-
-    return token;
-  },
+      return token;
+    },
     async session({ session, token }) {
       (session.user as ExtendedUser).id = token.id as string;
       return session as ExtendedSession;

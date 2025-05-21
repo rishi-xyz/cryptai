@@ -5,7 +5,8 @@ import { saveChat } from '@/src/database/queries';
 import { convertToCoreMessages, Message, streamText } from 'ai';
 
 export async function POST(request: Request) {
-  const { id, messages }: { id: string; messages: Array<Message> } = await request.json();
+  const { id, messages }: { id: string; messages: Array<Message> } =
+    await request.json();
 
   const session = await auth();
 

@@ -1,6 +1,7 @@
 import { User } from '@/prisma/generated/prisma';
 import { client } from './prisma';
 import { genSaltSync, hashSync } from 'bcrypt-ts';
+import { v4 as uuidV4 } from 'uuid';
 
 export async function updateChatVisiblityById({
   chatId,
@@ -38,8 +39,9 @@ export async function getUser(email: string): Promise<User[]> {
 export async function createUser(email: string, password: string) {
   const salt = genSaltSync(10);
   const hash = hashSync(password, salt);
+  const id = uuidV4(); //manually set user's id
   try {
-    return await client.user.create({ data: { email, password: hash } });
+    return await client.user.create({ data: { id, email, password: hash } });
   } catch (error) {
     console.error('Failed to create user in database', error);
     throw error;
@@ -47,9 +49,9 @@ export async function createUser(email: string, password: string) {
 }
 
 export async function createUserWithOauth(email: string) {
-  const salt = genSaltSync(10);
+  const id = uuidV4();
   try {
-    return await client.user.create({ data: { email } });
+    return await client.user.create({ data: { id, email } });
   } catch (error) {
     console.error('Failed to create user in database', error);
     throw error;
@@ -117,6 +119,25 @@ export async function saveChat({
     });
   } catch (error) {
     console.error('Failed to save chat in database', error);
+    throw error;
+  }
+}
+
+export async function renameChatTitleByChatId({
+  chatId,
+  newTitle,
+}: {
+  chatId: string;
+  newTitle: string;
+}) {
+  try {
+    const updatedChat = await client.chat.update({
+      where: { id: chatId },
+      data: { title: newTitle },
+    });
+    return updatedChat;
+  } catch (error) {
+    console.error('Failed to rename chat in database', error);
     throw error;
   }
 }

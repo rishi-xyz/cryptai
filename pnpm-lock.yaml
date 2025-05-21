@@ -185,6 +185,9 @@ importers:
       usehooks-ts:
         specifier: ^3.1.1
         version: 3.1.1(react@19.1.0)
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.1.5(@types/react@19.1.4))(@types/react@19.1.4)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -3466,6 +3469,10 @@ packages:
     engines: {node: '>=16.15.0'}
     peerDependencies:
       react: ^16.8.0  || ^17 || ^18 || ^19 || ^19.0.0-rc
+
+  uuid@11.1.0:
+    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
 
   valibot@0.36.0:
     resolution: {integrity: sha512-CjF1XN4sUce8sBK9TixrDqFM7RwNkuXdJu174/AwmQUB62QbCQADg5lLe8ldBalFgtj1uKj+pKwDJiNo4Mn+eQ==}
@@ -7175,6 +7182,8 @@ snapshots:
     dependencies:
       lodash.debounce: 4.0.8
       react: 19.1.0
+
+  uuid@11.1.0: {}
 
   valibot@0.36.0: {}
 

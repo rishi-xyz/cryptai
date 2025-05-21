@@ -20,7 +20,7 @@ export const authConfig = {
       }
 
       if (isLoggedIn && (isOnLogin || isOnRegister)) {
-        return Response.redirect(new URL('/', nextUrl));
+        return Response.redirect(new URL('/chat', nextUrl));
       }
 
       if (isOnRegister || isOnLogin) {
@@ -33,7 +33,7 @@ export const authConfig = {
       }
 
       if (isLoggedIn) {
-        return Response.redirect(new URL('/', nextUrl));
+        return Response.redirect(new URL('/chat', nextUrl));
       }
 
       return true;

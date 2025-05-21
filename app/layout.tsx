@@ -11,7 +11,7 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: 'CryptAI',
   description: 'Talk to SUI blockchain in Natural Language',
-  icons: './robot.png',
+  icons: '/robot.png',
 };
 
 export default function RootLayout({
