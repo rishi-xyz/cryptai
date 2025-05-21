@@ -15,7 +15,6 @@ export const authConfig = {
       const isApiRoute = nextUrl.pathname.startsWith('/api');
 
       if (isApiRoute) {
-        // ✅ Always allow the request and let the API route handle auth
         return true;
       }
 

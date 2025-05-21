@@ -24,7 +24,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!passwordsMatch) return null;
 
         return {
-          id: user.id, // ensure id matches DB
+          id: user.id,
           email: user.email,
         };
       },
@@ -46,12 +46,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!existingUser) {
           const newUser = await createUserWithOauth(user.email!);
-          token.id = newUser.id; // set from DB
+          token.id = newUser.id;
         } else {
-          token.id = existingUser.id; //  set from DB
+          token.id = existingUser.id;
         }
       } else if (user) {
-        token.id = user.id; //  from credentials authorize()
+        token.id = user.id;
       }
 
       return token;
