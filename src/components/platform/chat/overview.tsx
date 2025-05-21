@@ -13,13 +13,13 @@ export const Overview = () => {
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ delay: 0.5 }}
     >
-      <div className=" flex flex-col gap-4 rounded-2xl border-none p-6 text-sm text-zinc-400">
-          <p className="flex flex-row items-center justify-center gap-4 text-gray-900">
+      <div className="flex flex-col gap-4 rounded-2xl border-none p-6 text-sm text-zinc-400">
+        <p className="flex flex-row items-center justify-center gap-4 text-gray-900">
           <Image src={robotImage} alt="CryptAI" width={100} height={100} />
         </p>
         <p>
-          Welcome to CryptAI a Chatbot to chat with SUI blockchain
-          powered by the Google Gemini model built with
+          Welcome to CryptAI a Chatbot to chat with SUI blockchain powered by
+          the Google Gemini model built with
           <code className="bg-muted-foreground/15 rounded-sm px-1.5 py-0.5">
             Nextjs
           </code>{' '}

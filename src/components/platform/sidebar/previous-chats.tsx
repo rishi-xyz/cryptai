@@ -409,8 +409,15 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
             onChange={(e) => setRenameTitle(e.target.value)}
           />
           <AlertDialogFooter>
-            <AlertDialogCancel className='cursor-pointer'>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleRename} className='cursor-pointer hover:bg-fuchsia-500/30'>Rename</AlertDialogAction>
+            <AlertDialogCancel className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleRename}
+              className="cursor-pointer hover:bg-fuchsia-500/30"
+            >
+              Rename
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -425,8 +432,13 @@ const PreviousChat = ({ user }: { user: User | undefined }) => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className='cursor-pointer'>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className='cursor-pointer hover:bg-red-500'>
+            <AlertDialogCancel className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="cursor-pointer hover:bg-red-500"
+            >
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -31,7 +31,7 @@ function PureChatHeader({
           <TooltipTrigger asChild>
             <Button
               variant={'outline'}
-              className="order-2 ml-auto border-2 px-2 hover:border-fuchsia-500 md:order-1 md:ml-0 md:h-fit md:px-2 cursor-pointer"
+              className="order-2 ml-auto cursor-pointer border-2 px-2 hover:border-fuchsia-500 md:order-1 md:ml-0 md:h-fit md:px-2"
               onClick={() => {
                 router.push('/chat');
                 router.refresh();
@@ -48,7 +48,7 @@ function PureChatHeader({
       {!isReadonly && (
         <ModelSelector
           selectedModelId={selectedModelId}
-          className="order-1 md:order-2 cursor-pointer"
+          className="order-1 cursor-pointer md:order-2"
         />
       )}
     </header>

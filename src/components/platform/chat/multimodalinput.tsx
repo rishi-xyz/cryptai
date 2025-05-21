@@ -23,12 +23,14 @@ const suggestedActions = [
   {
     title: 'SUI Blockchain',
     label: 'What is SUI Blockchain?',
-    action: 'Explain in detail what is SUI Blockchain and its unqiure prperties',
+    action:
+      'Explain in detail what is SUI Blockchain and its unqiure prperties',
   },
   {
     title: 'Give Balance',
     label: 'give balance of public address',
-    action: 'give all balance of 0x6b9827f2dc7a4e597f992330232598b82764d531d8557b54af7a7d7aa677463a SUI public address',
+    action:
+      'give all balance of 0x6b9827f2dc7a4e597f992330232598b82764d531d8557b54af7a7d7aa677463a SUI public address',
   },
 ];
 
@@ -175,7 +177,7 @@ export function MultimodalInput({
                       content: suggestedAction.action,
                     });
                   }}
-                  className="flex w-full flex-col rounded-lg hover:border p-3 text-left text-sm text-zinc-800 transition-colors bg-zinc-100 hover:bg-muted/50 hover:border-fuchsia-500 cursor-pointer"
+                  className="hover:bg-muted/50 flex w-full cursor-pointer flex-col rounded-lg bg-zinc-100 p-3 text-left text-sm text-zinc-800 transition-colors hover:border hover:border-fuchsia-500"
                 >
                   <span className="font-medium">{suggestedAction.title}</span>
                   <span className="text-zinc-500 dark:text-zinc-400">
@@ -221,7 +223,7 @@ export function MultimodalInput({
         placeholder="Send a message..."
         value={input}
         onChange={handleInput}
-        className="bg-gray-100/20 min-h-[24px] resize-none overflow-hidden rounded-lg border-none text-base"
+        className="min-h-[24px] resize-none overflow-hidden rounded-lg border-none bg-gray-100/20 text-base"
         rows={3}
         onKeyDown={(event) => {
           if (event.key === 'Enter' && !event.shiftKey) {
@@ -238,7 +240,7 @@ export function MultimodalInput({
 
       {isLoading ? (
         <Button
-          className="absolute right-2 bottom-2 m-0.5 h-fit rounded-full p-1.5 text-white cursor-pointer hover:border"
+          className="absolute right-2 bottom-2 m-0.5 h-fit cursor-pointer rounded-full p-1.5 text-white hover:border"
           onClick={(event) => {
             event.preventDefault();
             stop();
@@ -248,7 +250,7 @@ export function MultimodalInput({
         </Button>
       ) : (
         <Button
-          className="absolute right-2 bottom-2 m-0.5 h-fit rounded-full p-1.5 text-white cursor-pointer hover:border"
+          className="absolute right-2 bottom-2 m-0.5 h-fit cursor-pointer rounded-full p-1.5 text-white hover:border"
           onClick={(event) => {
             event.preventDefault();
             submitForm();
@@ -260,7 +262,7 @@ export function MultimodalInput({
       )}
 
       <Button
-        className="absolute right-10 bottom-2  h-fit rounded-full p-1.5 cursor-pointer mx-3"
+        className="absolute right-10 bottom-2 mx-3 h-fit cursor-pointer rounded-full p-1.5"
         onClick={(event) => {
           event.preventDefault();
           fileInputRef.current?.click();
