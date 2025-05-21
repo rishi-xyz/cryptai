@@ -10,13 +10,13 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
       return !inline && match ? (
         <pre
           {...props}
-          className={`${className} mt-2 w-[80dvw] overflow-x-scroll rounded-lg bg-zinc-100 p-3 text-sm md:max-w-[500px] dark:bg-zinc-800`}
+          className={`${className} mt-2 w-[80dvw] overflow-x-scroll rounded-lg bg-zinc-800 p-3 text-sm md:max-w-[500px]`}
         >
           <code className={match[1]}>{children}</code>
         </pre>
       ) : (
         <code
-          className={`${className} rounded-md bg-zinc-100 px-1 py-0.5 text-sm dark:bg-zinc-800`}
+          className={`${className} rounded-md bg-black px-1 py-0.5`}
           {...props}
         >
           {children}
