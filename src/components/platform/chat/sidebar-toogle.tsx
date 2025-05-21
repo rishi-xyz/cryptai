@@ -11,15 +11,15 @@ export function SidebarToggle() {
   const { toggleSidebar } = useSidebar();
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
+    <Tooltip >
+      <TooltipTrigger asChild >
         <Button
           onClick={toggleSidebar}
           variant={'outline'}
-          className="border-2 md:h-fit md:px-2"
+          className="border-2 md:h-fit md:px-2 cursor-pointer hover:border-fuchsia-500"
           size={'lg'}
         >
-          <SidebarTrigger />
+          <SidebarTrigger className='cursor-pointer' />
         </Button>
       </TooltipTrigger>
       <TooltipContent align="start">Toggle Sidebar</TooltipContent>

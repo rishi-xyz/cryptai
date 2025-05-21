@@ -21,14 +21,14 @@ import { Textarea } from '../../ui/textarea';
 
 const suggestedActions = [
   {
-    title: 'Help me book a flight',
-    label: 'from San Francisco to London',
-    action: 'Help me book a flight from San Francisco to London',
+    title: 'SUI Blockchain',
+    label: 'What is SUI Blockchain?',
+    action: 'Explain in detail what is SUI Blockchain and its unqiure prperties',
   },
   {
-    title: 'What is the status',
-    label: 'of flight BA142 flying tmrw?',
-    action: 'What is the status of flight BA142 flying tmrw?',
+    title: 'Give Balance',
+    label: 'give balance of public address',
+    action: 'give all balance of 0x6b9827f2dc7a4e597f992330232598b82764d531d8557b54af7a7d7aa677463a SUI public address',
   },
 ];
 
@@ -175,7 +175,7 @@ export function MultimodalInput({
                       content: suggestedAction.action,
                     });
                   }}
-                  className="bg-muted/50 flex w-full flex-col rounded-lg border border-none border-zinc-200 p-3 text-left text-sm text-zinc-800 transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  className="flex w-full flex-col rounded-lg hover:border p-3 text-left text-sm text-zinc-800 transition-colors bg-zinc-100 hover:bg-muted/50 hover:border-fuchsia-500 cursor-pointer"
                 >
                   <span className="font-medium">{suggestedAction.title}</span>
                   <span className="text-zinc-500 dark:text-zinc-400">
@@ -221,7 +221,7 @@ export function MultimodalInput({
         placeholder="Send a message..."
         value={input}
         onChange={handleInput}
-        className="bg-muted min-h-[24px] resize-none overflow-hidden rounded-lg border-none text-base"
+        className="bg-gray-100/20 min-h-[24px] resize-none overflow-hidden rounded-lg border-none text-base"
         rows={3}
         onKeyDown={(event) => {
           if (event.key === 'Enter' && !event.shiftKey) {
@@ -238,7 +238,7 @@ export function MultimodalInput({
 
       {isLoading ? (
         <Button
-          className="absolute right-2 bottom-2 m-0.5 h-fit rounded-full p-1.5 text-white"
+          className="absolute right-2 bottom-2 m-0.5 h-fit rounded-full p-1.5 text-white cursor-pointer hover:border"
           onClick={(event) => {
             event.preventDefault();
             stop();
@@ -248,7 +248,7 @@ export function MultimodalInput({
         </Button>
       ) : (
         <Button
-          className="absolute right-2 bottom-2 m-0.5 h-fit rounded-full p-1.5 text-white"
+          className="absolute right-2 bottom-2 m-0.5 h-fit rounded-full p-1.5 text-white cursor-pointer hover:border"
           onClick={(event) => {
             event.preventDefault();
             submitForm();
@@ -260,7 +260,7 @@ export function MultimodalInput({
       )}
 
       <Button
-        className="absolute right-10 bottom-2 m-0.5 h-fit rounded-full p-1.5 dark:border-zinc-700"
+        className="absolute right-10 bottom-2  h-fit rounded-full p-1.5 cursor-pointer mx-3"
         onClick={(event) => {
           event.preventDefault();
           fileInputRef.current?.click();
