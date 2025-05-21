@@ -7,7 +7,7 @@ import { ReactNode } from 'react';
 import { BotIcon, UserIcon } from 'lucide-react';
 import { Markdown } from './markdown';
 import { PreviewAttachment } from './preview-attachment';
-import { Weather } from './weather';
+import { GetBalance } from './get-balance-ui';
 
 export const ViewMessages = ({
   chatId,
@@ -29,12 +29,16 @@ export const ViewMessages = ({
       animate={{ y: 0, opacity: 1 }}
     >
       <div className="flex size-[24px] shrink-0 flex-col items-center justify-center rounded-sm border p-1 text-zinc-500">
-        {role === 'assistant' ? <BotIcon /> : <UserIcon />}
+        {role === 'assistant' ? (
+          <BotIcon className="text-fuchsia-500" />
+        ) : (
+          <UserIcon className="text-white" />
+        )}
       </div>
 
       <div className="flex w-full flex-col gap-2">
         {content && typeof content === 'string' && (
-          <div className="flex flex-col gap-4 text-zinc-800 dark:text-zinc-300">
+          <div className="flex flex-col gap-4 text-zinc-300">
             <Markdown>{content}</Markdown>
           </div>
         )}
@@ -49,8 +53,8 @@ export const ViewMessages = ({
 
                 return (
                   <div key={toolCallId}>
-                    {toolName === 'getWeather' ? (
-                      <Weather chatId={chatId} weatherAtLocation={result} />
+                    {toolName === 'getbalance' ? (
+                      <GetBalance chatId={chatId} RecievedResult={result} />
                     ) : (
                       <div>{JSON.stringify(result, null, 2)}</div>
                     )}
@@ -59,7 +63,9 @@ export const ViewMessages = ({
               } else {
                 return (
                   <div key={toolCallId} className="skeleton">
-                    {toolName === 'getWeather' ? <Weather /> : null}
+                    {toolName === 'getWeather' ? (
+                      <GetBalance chatId={chatId} />
+                    ) : null}
                   </div>
                 );
               }

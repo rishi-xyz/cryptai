@@ -26,6 +26,9 @@ export async function POST(request: Request) {
         '
       `,
     messages: coreMessages,
+    onError: (err) => {
+      console.log(err.error);
+    },
     onFinish: async ({ response }) => {
       if (session.user && session.user.id) {
         try {

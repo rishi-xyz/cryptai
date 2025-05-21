@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { SuiClient } from '@mysten/sui/client';
 import { tool } from 'ai';
 
-const client = new SuiClient({ url: 'https://fullnode.mainnet.sui.io' });
+const client = new SuiClient({ url: 'https://fullnode.testnet.sui.io' });
 
 export const getbalance = tool({
   description:
