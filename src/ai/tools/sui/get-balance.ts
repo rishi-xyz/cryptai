@@ -1,8 +1,6 @@
 import { z } from 'zod';
-import { SuiClient } from '@mysten/sui/client';
 import { tool } from 'ai';
-
-const client = new SuiClient({ url: 'https://fullnode.testnet.sui.io' });
+import { Testnetclient } from './utils';
 
 export const getbalance = tool({
   description:
@@ -12,11 +10,11 @@ export const getbalance = tool({
   }),
   execute: async ({ address }: { address: string }) => {
     try {
-      const balances = await client.getAllBalances({ owner: address });
+      const balances = await Testnetclient.getAllBalances({ owner: address });
 
       const result = await Promise.all(
         balances.map(async (balance) => {
-          const metadata = await client.getCoinMetadata({
+          const metadata = await Testnetclient.getCoinMetadata({
             coinType: balance.coinType,
           });
 
