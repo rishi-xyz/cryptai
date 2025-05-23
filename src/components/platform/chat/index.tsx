@@ -36,7 +36,7 @@ export function Chat({
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
   return (
-    <div className="bg-background flex h-dvh flex-col justify-between pb-4 md:pb-8">
+    <div className="bg-background flex h-dvh max-w-screen flex-col justify-between overflow-hidden pb-4 md:pb-8">
       {/* Full-width header at the top */}
       <ChatHeader selectedModelId={selectedModelId} isReadonly={isReadonly} />
 
@@ -44,7 +44,7 @@ export function Chat({
       <div className="flex flex-1 flex-col items-center justify-between gap-4">
         <div
           ref={messagesContainerRef}
-          className="flex h-full w-dvw flex-col items-center gap-4 overflow-y-scroll"
+          className="flex h-full w-full flex-col items-center gap-4 overflow-y-scroll px-2 md:px-4"
         >
           {messages.length === 0 && <Overview />}
 
