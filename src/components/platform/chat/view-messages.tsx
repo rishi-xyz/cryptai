@@ -7,7 +7,9 @@ import { ReactNode } from 'react';
 import { BotIcon, UserIcon } from 'lucide-react';
 import { Markdown } from './markdown';
 import { PreviewAttachment } from './preview-attachment';
-import { GetBalance } from './get-balance-ui';
+import { GetBalance } from './tools-ui/get-balance-ui';
+import { TransferSui } from './tools-ui/transfer-sui';
+import WalletProviderWrapper from '../../globals/wallet-wrapper';
 
 export const ViewMessages = ({
   chatId,
@@ -52,19 +54,25 @@ export const ViewMessages = ({
                 const { result } = toolInvocation;
 
                 return (
-                  <div key={toolCallId}>
-                    {toolName === 'getbalance' ? (
-                      <GetBalance chatId={chatId} RecievedResult={result} />
-                    ) : (
-                      <div>{JSON.stringify(result, null, 2)}</div>
-                    )}
-                  </div>
+                  <WalletProviderWrapper>
+                    <div key={toolCallId}>
+                      {toolName === 'getbalance' ? (
+                        <GetBalance RecievedResult={result} />
+                      ) : toolName === 'transfersui' ? (
+                        <TransferSui RecievedResult={result} />
+                      ) : (
+                        <div>{JSON.stringify(result, null, 2)}</div>
+                      )}
+                    </div>
+                  </WalletProviderWrapper>
                 );
               } else {
                 return (
                   <div key={toolCallId} className="skeleton">
                     {toolName === 'getWeather' ? (
-                      <GetBalance chatId={chatId} />
+                      <GetBalance />
+                    ) : toolName === 'transfersui' ? (
+                      <TransferSui />
                     ) : null}
                   </div>
                 );

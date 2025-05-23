@@ -10,7 +10,7 @@ import { cookies } from 'next/headers';
 import { DEFAULT_MODEL_NAME, models } from '@/src/ai/models';
 
 export default async function Page({ params }: { params: any }) {
-  const { id } = params;
+  const { id } = await params;
   const cookieStore = await cookies();
   const modelIdFromCookie = cookieStore.get('model-id')?.value;
   const selectedModelId =

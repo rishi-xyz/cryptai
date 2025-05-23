@@ -27,7 +27,7 @@ export function Chat({
       initialMessages,
       maxSteps: 10,
       onFinish: () => {
-        window.history.replaceState({}, '', `/chat/${id}`); //replace the page without refreshing for better ui
+        window.history.replaceState({}, '', `/chat/${id}`);
       },
     });
 
@@ -36,16 +36,18 @@ export function Chat({
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
   return (
-    <div className="bg-background flex h-dvh max-w-screen flex-col justify-between overflow-hidden pb-4 md:pb-8">
-      {/* Full-width header at the top */}
-      <ChatHeader selectedModelId={selectedModelId} isReadonly={isReadonly} />
+    <div className="flex h-screen flex-col overflow-hidden">
+      {/* Sticky header inside sidebar-aware layout */}
+      <div className="bg-background sticky top-0 z-10 border-b border-zinc-800">
+        <ChatHeader selectedModelId={selectedModelId} isReadonly={isReadonly} />
+      </div>
 
-      {/* Scrollable message + input container */}
-      <div className="flex flex-1 flex-col items-center justify-between gap-4">
-        <div
-          ref={messagesContainerRef}
-          className="flex h-full w-full flex-col items-center gap-4 overflow-y-scroll px-2 md:px-4"
-        >
+      {/* Scrollable message area */}
+      <div
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto px-2 py-4 md:px-4"
+      >
+        <div className="flex flex-col items-center gap-4">
           {messages.length === 0 && <Overview />}
 
           {messages.map((message) => (
@@ -64,8 +66,11 @@ export function Chat({
             className="min-h-[24px] min-w-[24px] shrink-0"
           />
         </div>
+      </div>
 
-        <form className="max-w-[calc(100dvw-32px) relative flex w-full flex-row items-end gap-2 px-4 md:max-w-[500px] md:px-0">
+      {/* Sticky input within layout */}
+      <div className="bg-background sticky bottom-0 z-10 border-t border-zinc-800 px-4 py-2 md:px-0">
+        <form className="mx-auto flex w-full max-w-[500px] flex-row items-end gap-2">
           <MultimodalInput
             input={input}
             setInput={setInput}

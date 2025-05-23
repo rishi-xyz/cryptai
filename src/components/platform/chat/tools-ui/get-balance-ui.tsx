@@ -15,7 +15,6 @@ type BalanceResult = {
 export function GetBalance({
   RecievedResult,
 }: {
-  chatId: string;
   RecievedResult?: { balances: BalanceResult[]; error?: string };
 }) {
   const { balances, error } = RecievedResult!;
