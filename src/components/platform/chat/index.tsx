@@ -53,7 +53,6 @@ export function Chat({
           {messages.map((message) => (
             <ViewMessages
               key={message.id}
-              chatId={id}
               role={message.role}
               content={message.content}
               attachments={message.experimental_attachments}

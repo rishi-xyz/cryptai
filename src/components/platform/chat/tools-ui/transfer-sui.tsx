@@ -72,7 +72,7 @@ export const TransferSui = ({
       <div>
         <h4 className="font-semibold text-zinc-300">Summary</h4>
         <p className="text-zinc-400">
-          You're about to send{' '}
+          You are about to send{' '}
           <span className="font-medium text-white">{amount} SUI</span> to the
           address{' '}
           <span className="font-mono text-wrap break-words text-white">

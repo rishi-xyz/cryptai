@@ -12,13 +12,11 @@ import { TransferSui } from './tools-ui/transfer-sui';
 import WalletProviderWrapper from '../../globals/wallet-wrapper';
 
 export const ViewMessages = ({
-  chatId,
   role,
   content,
   toolInvocations,
   attachments,
 }: {
-  chatId: string;
   role: string;
   content: string | ReactNode;
   toolInvocations: Array<ToolInvocation> | undefined;
@@ -54,8 +52,8 @@ export const ViewMessages = ({
                 const { result } = toolInvocation;
 
                 return (
-                  <WalletProviderWrapper>
-                    <div key={toolCallId}>
+                  <WalletProviderWrapper key={toolCallId}>
+                    <div>
                       {toolName === 'getbalance' ? (
                         <GetBalance RecievedResult={result} />
                       ) : toolName === 'transfersui' ? (
