@@ -34,7 +34,7 @@ export const Overview = () => {
           Learn more about{' '}
           <Link
             className="text-blue-500 dark:text-blue-400"
-            href="https://sdk.vercel.ai/docs"
+            href="/"
             target="_blank"
           >
             CryptAI
