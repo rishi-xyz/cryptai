@@ -9,7 +9,7 @@ export const MarketingFooter = () => {
           {/* Logo & Description */}
           <div className="flex flex-col items-center md:items-start">
             <h2 className="bg-white bg-[radial-gradient(100%_100%_at_top_left,#4a208a,white,rgb(74,32,138,.5))] bg-clip-text text-2xl font-semibold text-transparent">
-              SuiGpt
+              CryptAI
             </h2>
             <p className="mt-2 max-w-xs text-center text-sm text-gray-400 md:text-left"></p>
           </div>
@@ -44,7 +44,7 @@ export const MarketingFooter = () => {
         {/* Copyright */}
         <div className="mt-8 border-t border-purple-500/10 pt-8">
           <p className="text-center text-xs text-gray-400">
-            {new Date().getFullYear()} SuiGpt. All rights reserved.
+            {new Date().getFullYear()} CryptAI. All rights reserved.
           </p>
         </div>
       </div>

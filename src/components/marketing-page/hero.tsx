@@ -11,7 +11,7 @@ export const MarketingHero = () => {
     <section className="overflow-x-clip py-24 md:py-52">
       <div className="container">
         <p className="text-center text-2xl font-extrabold tracking-wider text-zinc-400">
-          Intoducing SuiGpt
+          Intoducing CryptAI
         </p>
         <h1 className="mx-auto mt-10 max-w-4xl text-center text-5xl font-black uppercase md:text-6xl">
           AI Agent that interacts with blockchain

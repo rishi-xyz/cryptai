@@ -9,7 +9,7 @@ export const MarketingHeader = () => {
         <div className="flex h-20 items-center justify-between">
           <div>
             <h2 className="ml-1 bg-white bg-[radial-gradient(100%_100%_at_top_left,#d946ef,white,rgb(74,32,138,.5))] bg-clip-text text-center text-3xl font-semibold tracking-tighter text-transparent md:ml-5 md:text-4xl md:leading-none">
-              SuiGpt
+              CryptAI
             </h2>
           </div>
           <div className="hidden items-center justify-center gap-x-4 md:flex">

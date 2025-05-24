@@ -16,7 +16,7 @@ export const features = [
   {
     title: 'Multi-Chain Support',
     description:
-      'Choose between Ethereum, Solana, and more — SuiGpt connects you to multiple blockchains seamlessly.',
+      'Choose between Ethereum, Solana, and more — CryptAI connects you to multiple blockchains seamlessly.',
     icon: <Layers />,
   },
   {

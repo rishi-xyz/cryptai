@@ -28,7 +28,7 @@ export default function NotFound() {
         <div className="flex h-75 w-75 flex-col items-center justify-center gap-10 rounded-2xl bg-white/5 p-7 text-center">
           <div>
             <h1 className="bg-white bg-[radial-gradient(100%_100%_at_top_left,#d946ef,white,rgb(74,32,138,.5))] bg-clip-text text-5xl font-semibold tracking-tighter text-transparent md:text-4xl">
-              SuiGpt
+              CryptAI
             </h1>
             <h3 className="mt-5 text-gray-500">You are Lost</h3>
           </div>
