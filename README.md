@@ -1,29 +1,29 @@
-# \U0001f9e0 CryptAI \u2013 Talk to the Sui Blockchain with AI
+# CryptAI - Talk to the Sui Blockchain with AI
 
-CryptAI is a conversational web app that allows users to interact with the [Sui blockchain](https://sui.io) using natural language \u2014 just like talking to ChatGPT.
+CryptAI is a conversational web app that allows users to interact with the [Sui blockchain](https://sui.io) using natural language  just like talking to ChatGPT.
 
 Built with **Next.js**, **Vercel AI SDK**, **Google Gemini**, and the **Mysten Sui SDK**, CryptAI makes blockchain interactions simple, accessible, and developer-friendly.
 
-> \U0001f680 "Talk to the blockchain \u2014 no code required."
+> "Talk to the blockchain no code required."
 
 ---
 
-## \u2728 Features
+##  Features
 
-- \U0001f517 **Natural Language to Blockchain Interaction**
-  - Ask questions like: "What\u2019s my wallet balance?" or "Send 5 SUI to Alice."
-- \U0001f510 **Secure Wallet Integration**
+-  **Natural Language to Blockchain Interaction**
+  - Ask questions like: "What my wallet balance?" or "Send 5 SUI to Alice."
+-  **Secure Wallet Integration**
   - Powered by `@suiet/wallet-kit` with support for multiple Sui wallets.
-- \U0001f4dc **Smart Contract Query & Execution**
+-  **Smart Contract Query & Execution**
   - Read and write to Move-based smart contracts.
-- \U0001f9e0 **AI-Powered by Google Gemini + Vercel AI SDK**
+-  **AI-Powered by Google Gemini + Vercel AI SDK**
   - Real-time responses from a fine-tuned LLM connected to blockchain logic.
-- \U0001f4e6 **Sui SDK Support**
+-  **Sui SDK Support**
   - Interact with the blockchain using `@mysten/sui.js`.
 
 ---
 
-## \U0001f6e0\ufe0f Tech Stack
+##  Tech Stack
 
 - **Framework**: [Next.js](https://nextjs.org)
 - **Blockchain SDK**: [`@mysten/sui.js`](https://github.com/MystenLabs/sui)
@@ -33,7 +33,7 @@ Built with **Next.js**, **Vercel AI SDK**, **Google Gemini**, and the **Mysten S
 
 ---
 
-## \U0001f4e6 Getting Started
+##  Getting Started
 
 ### 1. Clone the Repository
 
@@ -71,7 +71,7 @@ GITHUB_CLIENT_SECRET=
 GOOGLE_GENERATIVE_AI_API_KEY=
 ```
 
-### 4. Generate Prisma (Optoional)
+### 4. Generate Prisma (Optional)
 ```bash
 pnpx prisma generate
 ```
