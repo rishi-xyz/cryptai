@@ -1,5 +1,5 @@
 import { SuiClient } from '@mysten/sui/client';
 
 export const Testnetclient = new SuiClient({
-  url: 'https://fullnode.testnet.sui.io',
+  url: process.env.PUBLIC_NODE || 'https://fullnode.mainnet.sui.io',
 });

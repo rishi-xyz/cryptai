@@ -32,7 +32,19 @@ export const TransferSui = ({
       })
       .then((res) => {
         toast('Transaction Approved', {
-          description: `Transaction digest: ${res || 'Success'}`,
+          description: `Transaction digest: ${res.digest || 'Success'}`,
+          action: {
+            label: 'Copy Digest',
+            onClick: () => {
+              if (res?.digest) {
+                navigator.clipboard.writeText(res.digest).then(() => {
+                  toast.success('Digest copied to clipboard');
+                });
+              } else {
+                toast.error('Unable to copy transaction digest');
+              }
+            },
+          },
         });
       })
       .catch((err) => {
