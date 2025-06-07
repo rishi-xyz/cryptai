@@ -17,7 +17,7 @@ export const MarketingHeader = () => {
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-center gap-x-4 md:gap-x-6">
+          <div className="flex items-center justify-center gap-x-4 md:gap-x-6 lg:ml-66">
             {/* Desktop Text Links */}
             <div className="hidden gap-x-4 md:flex">
               <Link
@@ -55,7 +55,7 @@ export const MarketingHeader = () => {
           </div>
 
           {/* Launch App Button: only visible on md+ */}
-          <div className="mr-5 hidden md:block">
+          <div className="hidden md:block">
             <div className="inset-0 rounded-2xl outline-2 outline-offset-2 outline-fuchsia-500/30 hover:bg-fuchsia-500/30">
               <Link href={'/chat'}>
                 <Button variant={'fushia'} size={'default'}>
