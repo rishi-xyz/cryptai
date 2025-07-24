@@ -5,6 +5,7 @@ export const authConfig = {
     signIn: '/login',
     newUser: '/chat',
   },
+  trustHost: true,
   providers: [],
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
