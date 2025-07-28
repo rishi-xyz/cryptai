@@ -18,8 +18,8 @@ export const Overview = () => {
           <Image src={robotImage} alt="CryptAI" width={100} height={100} />
         </p>
         <p>
-          Welcome to CryptAI a Chatbot to chat with SUI blockchain powered by
-          the Google Gemini model built with
+          Welcome to CryptAI a Chatbot to chat with blockchain powered by the
+          Google Gemini model built with
           <code className="bg-muted-foreground/15 rounded-sm px-1.5 py-0.5">
             Nextjs
           </code>{' '}

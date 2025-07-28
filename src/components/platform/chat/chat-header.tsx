@@ -9,8 +9,10 @@ import { PlusIcon } from 'lucide-react';
 import { useSidebar } from '../../ui/sidebar';
 import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../ui/tooltip';
-import WalletProviderWrapper from '../../globals/wallet-wrapper';
-import { ConnectButton } from '@suiet/wallet-kit';
+import { useAccount } from 'wagmi';
+import { InfoList } from './connect-button/info-list';
+import { ActionButtonList } from './connect-button/action-button';
+import { ConnectButton } from '@/src/components/platform/chat/connect-button/connect-button';
 
 function PureChatHeader({
   selectedModelId,
@@ -22,7 +24,7 @@ function PureChatHeader({
   const router = useRouter();
   const { open } = useSidebar();
   const { width: windowWidth } = useWindowSize();
-
+  const { isConnected } = useAccount();
   return (
     <header className="bg-background sticky top-0 flex w-full items-center justify-between px-2 py-1.5 md:px-2">
       {/* Left Section */}
@@ -58,18 +60,7 @@ function PureChatHeader({
 
       {/* Right Section */}
       <div className="ml-auto">
-        <WalletProviderWrapper>
-          <div className="overflow-hidden rounded-md bg-fuchsia-500 text-white">
-            <Button asChild size="sm" variant={'fushia'}>
-              <ConnectButton
-                className="bg-fuchsia-500 text-white hover:bg-fuchsia-600"
-                style={{
-                  backgroundColor: 'transparent',
-                }}
-              />
-            </Button>
-          </div>
-        </WalletProviderWrapper>
+        <ConnectButton />
       </div>
     </header>
   );

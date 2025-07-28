@@ -1,8 +1,12 @@
 ignoredBuiltDependencies:
   - '@tailwindcss/oxide'
+  - bufferutil
   - sharp
   - unrs-resolver
+  - utf-8-validate
 onlyBuiltDependencies:
   - '@prisma/client'
   - '@prisma/engines'
+  - '@reown/appkit'
+  - keccak
   - prisma

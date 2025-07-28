@@ -9,7 +9,6 @@ import { Markdown } from './markdown';
 import { PreviewAttachment } from './preview-attachment';
 import { GetBalance } from './tools-ui/get-balance-ui';
 import { TransferSui } from './tools-ui/transfer-sui';
-import WalletProviderWrapper from '../../globals/wallet-wrapper';
 
 export const ViewMessages = ({
   role,
@@ -52,17 +51,15 @@ export const ViewMessages = ({
                 const { result } = toolInvocation;
 
                 return (
-                  <WalletProviderWrapper key={toolCallId}>
-                    <div>
-                      {toolName === 'getbalance' ? (
-                        <GetBalance RecievedResult={result} />
-                      ) : toolName === 'transfersui' ? (
-                        <TransferSui RecievedResult={result} />
-                      ) : (
-                        <div>{JSON.stringify(result, null, 2)}</div>
-                      )}
-                    </div>
-                  </WalletProviderWrapper>
+                  <div key={toolCallId}>
+                    {toolName === 'getbalance' ? (
+                      <GetBalance RecievedResult={result} />
+                    ) : toolName === 'transfersui' ? (
+                      <TransferSui RecievedResult={result} />
+                    ) : (
+                      <div>{JSON.stringify(result, null, 2)}</div>
+                    )}
+                  </div>
                 );
               } else {
                 return (
