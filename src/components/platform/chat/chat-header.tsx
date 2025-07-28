@@ -10,8 +10,6 @@ import { useSidebar } from '../../ui/sidebar';
 import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../ui/tooltip';
 import { useAccount } from 'wagmi';
-import { InfoList } from './connect-button/info-list';
-import { ActionButtonList } from './connect-button/action-button';
 import { ConnectButton } from '@/src/components/platform/chat/connect-button/connect-button';
 
 function PureChatHeader({

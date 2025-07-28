@@ -1,6 +1,12 @@
 import { cookieStorage, createStorage } from 'wagmi';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { mainnet, arbitrum, base } from '@reown/appkit/networks';
+import {
+  mainnet,
+  arbitrum,
+  base,
+  solana,
+  monadTestnet,
+} from '@reown/appkit/networks';
 import type { AppKitNetwork } from '@reown/appkit/networks';
 
 export const projectId =
@@ -10,7 +16,7 @@ if (!projectId) {
   throw new Error('Project ID is not defined');
 }
 
-export const networks = [mainnet, arbitrum, base] as [
+export const networks = [mainnet, arbitrum, base, solana, monadTestnet] as [
   AppKitNetwork,
   ...AppKitNetwork[],
 ];
