@@ -1,6 +1,6 @@
 'use client';
 
-import { createAppKit } from '@reown/appkit';
+import { AppKit, createAppKit } from '@reown/appkit';
 import {
   mainnet,
   arbitrum,
@@ -9,10 +9,10 @@ import {
   monadTestnet,
 } from '@reown/appkit/networks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React, { type ReactNode } from 'react';
+import React, { type ReactNode, createContext } from 'react';
 import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi';
 
-import { wagmiAdapter, projectId } from '@/src/config';
+import { wagmiAdapter, projectId, networks } from '@/src/config';
 
 const queryClient = new QueryClient();
 
@@ -46,6 +46,14 @@ export const modal = createAppKit({
   themeMode: 'dark',
 });
 
+const AppKitContext = createContext<AppKit | null>(null);
+
+export const AppkitProvider = ({ children }: { children: ReactNode }) => {
+  return (
+    <AppKitContext.Provider value={modal}>{children}</AppKitContext.Provider>
+  );
+};
+
 function ContextProvider({
   children,
   cookies,
@@ -57,13 +65,16 @@ function ContextProvider({
     wagmiAdapter.wagmiConfig as Config,
     cookies,
   );
-
   return (
     <WagmiProvider
       config={wagmiAdapter.wagmiConfig as Config}
       initialState={initialState}
     >
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <AppkitProvider>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </AppkitProvider>
     </WagmiProvider>
   );
 }
