@@ -15,6 +15,7 @@
   "dependencies": {
     "@ai-sdk/google": "^1.2.18",
     "@ai-sdk/react": "^1.2.12",
+    "@hashgraph/sdk": "^2.70.0",
     "@hookform/resolvers": "^5.0.1",
     "@mysten/sui": "^1.29.1",
     "@prisma/client": "6.9.0",
@@ -46,6 +47,8 @@
     "@radix-ui/react-tooltip": "^1.2.6",
     "@reown/appkit": "^1.7.16",
     "@reown/appkit-adapter-wagmi": "^1.7.16",
+    "@reown/appkit-wallet-button": "^1.7.18",
+    "@suiet/wallet-kit": "^0.5.1",
     "@tanstack/react-query": "^5.83.0",
     "@vercel/blob": "^1.0.2",
     "ai": "^4.3.16",

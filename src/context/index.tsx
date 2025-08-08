@@ -1,18 +1,18 @@
 'use client';
 
-import { AppKit, createAppKit } from '@reown/appkit';
+import { CreateAppKit } from '@reown/appkit';
 import {
   mainnet,
-  arbitrum,
-  base,
   solana,
   monadTestnet,
+  base,
+  sepolia,
 } from '@reown/appkit/networks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React, { type ReactNode, createContext } from 'react';
+import React, { type ReactNode } from 'react';
 import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi';
 
-import { wagmiAdapter, projectId, networks } from '@/src/config';
+import { wagmiAdapter, projectId } from '@/src/config';
 
 const queryClient = new QueryClient();
 
@@ -21,7 +21,7 @@ if (!projectId) {
 }
 
 // Set up metadata
-const metadata = {
+export const metadata = {
   name: 'CryptAI',
   description: 'Talk to blockchain in Natural Language',
   url: 'https://cryptai-eight.vercel.app', // origin must match your domain & subdomain
@@ -31,28 +31,17 @@ const metadata = {
 };
 
 // Create the modal
-export const modal = createAppKit({
+export const modal = {
   adapters: [wagmiAdapter],
   projectId,
-  networks: [mainnet, arbitrum, base, solana, monadTestnet],
+  networks: [mainnet, solana, monadTestnet, base, sepolia],
   defaultNetwork: mainnet,
   metadata: metadata,
   features: {
-    email: true,
     analytics: true, // Optional - defaults to your Cloud configuration
-    socials: ['google', 'x', 'github', 'discord'],
-    emailShowWallets: true,
   },
   themeMode: 'dark',
-});
-
-const AppKitContext = createContext<AppKit | null>(null);
-
-export const AppkitProvider = ({ children }: { children: ReactNode }) => {
-  return (
-    <AppKitContext.Provider value={modal}>{children}</AppKitContext.Provider>
-  );
-};
+} as CreateAppKit;
 
 function ContextProvider({
   children,
@@ -70,11 +59,7 @@ function ContextProvider({
       config={wagmiAdapter.wagmiConfig as Config}
       initialState={initialState}
     >
-      <AppkitProvider>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </AppkitProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );
 }

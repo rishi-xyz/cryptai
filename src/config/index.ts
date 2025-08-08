@@ -2,14 +2,12 @@ import { cookieStorage, createStorage } from 'wagmi';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import {
   mainnet,
-  arbitrum,
-  base,
   solana,
   monadTestnet,
+  sepolia,
+  base,
 } from '@reown/appkit/networks';
 import type { AppKitNetwork } from '@reown/appkit/networks';
-import { AppkitProvider } from '../context';
-import { createAppKit } from '@reown/appkit';
 
 export const projectId =
   process.env.NEXT_PUBLIC_PROJECT_ID || 'b56e18d47c72ab683b10814fe9495694'; // this is a public projectId only to use on localhost
@@ -18,7 +16,7 @@ if (!projectId) {
   throw new Error('Project ID is not defined');
 }
 
-export const networks = [mainnet, arbitrum, base, solana, monadTestnet] as [
+export const networks = [mainnet, solana, monadTestnet, sepolia, base] as [
   AppKitNetwork,
   ...AppKitNetwork[],
 ];

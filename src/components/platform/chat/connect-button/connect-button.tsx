@@ -1,19 +1,22 @@
 'use client';
 
 import { Button } from '@/src/components/ui/button';
-import { AppkitProvider } from '@/src/context';
-import { AppKit } from '@reown/appkit';
-import { useAppKit } from '@reown/appkit/react';
-import { useAccount } from 'wagmi';
+import { modal } from '@/src/context';
+import {
+  createAppKit,
+  useAppKit,
+  useAppKitAccount,
+  useAppKitNetwork,
+  useAppKitBalance,
+} from '@reown/appkit/react';
+import { Loader2 } from 'lucide-react';
 
 export const ConnectButton = () => {
-  const { isConnected } = useAccount();
-  const { open } = useAppKit();
+  createAppKit(modal);
+  // const { open } = useAppKit()
   return (
-    <AppkitProvider>
-      <div className="flex">
-        <Button variant={'fushia'}>Connect</Button>
-      </div>
-    </AppkitProvider>
+    <div className="flex">
+      <appkit-button />
+    </div>
   );
 };

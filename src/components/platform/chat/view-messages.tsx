@@ -64,7 +64,7 @@ export const ViewMessages = ({
               } else {
                 return (
                   <div key={toolCallId} className="skeleton">
-                    {toolName === 'getWeather' ? (
+                    {toolName === 'getbalance' ? (
                       <GetBalance />
                     ) : toolName === 'transfersui' ? (
                       <TransferSui />

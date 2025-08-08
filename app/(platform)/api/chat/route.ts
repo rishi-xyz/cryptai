@@ -1,6 +1,6 @@
 import { auth } from '@/app/(auth)/auth';
 import { geminiProModel } from '@/src/ai';
-import { Suitools } from '@/src/ai/tools';
+import { ALLTools, Suitools } from '@/src/ai/tools';
 import { saveChat } from '@/src/database/queries';
 import { convertToCoreMessages, Message, streamText } from 'ai';
 
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         }
       }
     },
-    tools: Suitools,
+    tools: ALLTools,
     experimental_telemetry: {
       isEnabled: true,
       functionId: 'stream-text',
