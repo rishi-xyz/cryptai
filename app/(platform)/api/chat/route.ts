@@ -1,5 +1,6 @@
 import { auth } from '@/app/(auth)/auth';
 import { geminiProModel } from '@/src/ai';
+import { systemInstructions } from '@/src/ai/system-instructions';
 import { ALLTools, Suitools } from '@/src/ai/tools';
 import { saveChat } from '@/src/database/queries';
 import { convertToCoreMessages, Message, streamText } from 'ai';
@@ -20,11 +21,7 @@ export async function POST(request: Request) {
 
   const result = await streamText({
     model: geminiProModel,
-    system: `\n
-         - You are a gemini chat bot made to talk with users
-         - be very kind and respectful to the users 
-        '
-      `,
+    system: systemInstructions,
     messages: coreMessages,
     onError: (err) => {
       console.log(err.error);

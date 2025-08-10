@@ -30,7 +30,7 @@ export default async function RootLayout({
         suppressHydrationWarning
       >
         <ContextProvider cookies={cookies}>
-          <Toaster position={'top-right'} />
+          <Toaster position={'bottom-right'} />
           {children}
         </ContextProvider>
       </body>

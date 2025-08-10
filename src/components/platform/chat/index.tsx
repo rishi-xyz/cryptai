@@ -3,11 +3,12 @@
 import { Attachment, Message } from 'ai';
 import { useChat } from '@ai-sdk/react';
 import { useScrollToBottom } from '@/src/hooks/use-scrolltobottom';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Overview } from './overview';
 import { ViewMessages } from './view-messages';
 import { MultimodalInput } from './multimodalinput';
 import { ChatHeader } from './chat-header';
+import { useUserWalletData } from '@/src/store/wallet-store';
 
 export function Chat({
   id,
@@ -20,10 +21,27 @@ export function Chat({
   selectedModelId: string;
   isReadonly: boolean;
 }) {
+  const userWallet = useUserWalletData();
+
+  console.log('sender', userWallet.useraddress);
+  console.log('chain id', userWallet.chainId);
+  console.log('chain name', userWallet.chainName);
+
+  // Memoize the body to prevent infinite re-renders
+  const chatBody = useMemo(
+    () => ({
+      id,
+      userWalletAddress: userWallet.useraddress,
+      currentchain: userWallet.chainName,
+      currentchainID: userWallet.chainId,
+    }),
+    [id, userWallet.useraddress, userWallet.chainId, userWallet.chainName],
+  );
+
   const { messages, handleSubmit, input, setInput, append, isLoading, stop } =
     useChat({
       id,
-      body: { id },
+      body: chatBody,
       initialMessages,
       maxSteps: 10,
       onFinish: () => {
@@ -37,7 +55,7 @@ export function Chat({
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      {/* Sticky header inside sidebar-aware layout */}
+      {/* Sticky header */}
       <div className="bg-background sticky top-0 z-10 border-b border-zinc-800">
         <ChatHeader selectedModelId={selectedModelId} isReadonly={isReadonly} />
       </div>
@@ -49,7 +67,6 @@ export function Chat({
       >
         <div className="flex flex-col items-center gap-4">
           {messages.length === 0 && <Overview />}
-
           {messages.map((message) => (
             <ViewMessages
               key={message.id}
@@ -59,7 +76,6 @@ export function Chat({
               toolInvocations={message.toolInvocations}
             />
           ))}
-
           <div
             ref={messagesEndRef}
             className="min-h-[24px] min-w-[24px] shrink-0"
@@ -67,7 +83,7 @@ export function Chat({
         </div>
       </div>
 
-      {/* Sticky input within layout */}
+      {/* Sticky input */}
       <div className="bg-background sticky bottom-0 z-10 border-t border-zinc-800 px-4 py-2 md:px-0">
         <form className="mx-auto flex w-full max-w-[500px] flex-row items-end gap-2">
           <MultimodalInput

@@ -26,6 +26,7 @@ import {
 } from '@reown/appkit/react';
 import { chainsI } from '@/src/types/chains';
 import { modal } from '@/src/context';
+import { useWalletStore } from '@/src/store/wallet-store';
 
 const chains: chainsI[] = [
   {
@@ -61,7 +62,33 @@ export function ComboboxDemo() {
   const { open: openModal } = useAppKit();
   const { isConnected, address } = useAppKitAccount();
 
-  // Initialize value based on current network
+  const setWalletData = useWalletStore((state) => state.setWalletData);
+
+  React.useEffect(() => {
+    if (isConnected && address && caipNetwork) {
+      const chainId = caipNetwork?.id
+        ? parseInt(
+            String(caipNetwork.id).split(':').pop() || String(caipNetwork.id),
+            10,
+          )
+        : 1;
+      const chainName = caipNetwork?.name || null;
+
+      setWalletData({
+        address,
+        chainId,
+        chainName,
+      });
+
+      console.log('Chain info updated in store:', {
+        address,
+        chainId,
+        chainName,
+        caipNetwork,
+      });
+    }
+  }, [caipNetwork, address, isConnected, setWalletData]);
+
   React.useEffect(() => {
     if (caipNetwork) {
       const currentChain = chains.find(
@@ -92,6 +119,29 @@ export function ComboboxDemo() {
       }
 
       await switchNetwork(selectedChain.caipNetwork);
+
+      // Update store immediately after successful switch
+      if (address) {
+        const chainId = selectedChain.caipNetwork?.id
+          ? parseInt(
+              String(selectedChain.caipNetwork.id).split(':').pop() ||
+                String(selectedChain.caipNetwork.id),
+              10,
+            )
+          : selectedChain.id;
+
+        setWalletData({
+          address,
+          chainId,
+          chainName: selectedChain.label,
+        });
+
+        console.log('Solana chain switched and store updated:', {
+          address,
+          chainId,
+          chainName: selectedChain.label,
+        });
+      }
 
       toast('Network switched successfully', {
         description: `Switched to ${selectedChain.label}`,
@@ -130,6 +180,29 @@ export function ComboboxDemo() {
   const handleEVMSwitch = async (selectedChain: chainsI) => {
     try {
       await switchNetwork(selectedChain.caipNetwork);
+
+      // Update store immediately after successful switch
+      if (address) {
+        const chainId = selectedChain.caipNetwork?.id
+          ? parseInt(
+              String(selectedChain.caipNetwork.id).split(':').pop() ||
+                String(selectedChain.caipNetwork.id),
+              10,
+            )
+          : selectedChain.id;
+
+        setWalletData({
+          address,
+          chainId,
+          chainName: selectedChain.label,
+        });
+
+        console.log('EVM chain switched and store updated:', {
+          address,
+          chainId,
+          chainName: selectedChain.label,
+        });
+      }
 
       toast('Network switched successfully', {
         description: `Switched to ${selectedChain.label}`,

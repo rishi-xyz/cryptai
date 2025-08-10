@@ -9,6 +9,7 @@ import { Markdown } from './markdown';
 import { PreviewAttachment } from './preview-attachment';
 import { GetBalance } from './tools-ui/get-balance-ui';
 import { TransferSui } from './tools-ui/transfer-sui';
+import { TransferEVM } from './tools-ui/transfer-evm';
 
 export const ViewMessages = ({
   role,
@@ -56,6 +57,8 @@ export const ViewMessages = ({
                       <GetBalance RecievedResult={result} />
                     ) : toolName === 'transfersui' ? (
                       <TransferSui RecievedResult={result} />
+                    ) : toolName === 'transferevm' ? (
+                      <TransferEVM RecievedResult={result} />
                     ) : (
                       <div>{JSON.stringify(result, null, 2)}</div>
                     )}
