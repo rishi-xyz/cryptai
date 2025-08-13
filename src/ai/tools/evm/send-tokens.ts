@@ -2,87 +2,249 @@ import { z } from 'zod';
 import { tool } from 'ai';
 import { ethers } from 'ethers';
 
-export const transferevm = tool({
-  description:
-    "Create an unsigned EVM transaction object for sending native tokens with serialized data. required parameters are wallet address of recipient, amount in ethers or eth and sender's or user's wallet address will be present in body",
-  parameters: z.object({
-    recipient: z.string().describe('Recipient wallet address'),
-    amount: z.number().describe('Amount in ether'),
-    sender: z.string().describe('Sender wallet address'),
-    chainId: z.number().optional().describe('Optional EVM chain ID'),
-    gasLimit: z.number().optional().describe('Optional gas limit'),
-    gasPrice: z.string().optional().describe('Optional gas price'),
-    nonce: z.number().optional().describe('Optional Nonce'),
-  }),
-  execute: async ({
-    recipient,
-    amount,
-    sender,
-    chainId,
-    gasLimit,
-    gasPrice,
-    nonce,
-  }) => {
-    try {
-      if (!chainId) {
-        throw new Error('Chain ID is required if not auto-provided by UI.');
+function isValidEthereumAddress(address: string): boolean {
+  try {
+    ethers.getAddress(address);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function createTransactionData(
+  recipient: string,
+  amount: number,
+  sender: string,
+  chainId: number,
+  chainName: string,
+  currency: string,
+  gasLimit?: number,
+  gasPrice?: string,
+  nonce?: number,
+) {
+  try {
+    if (!isValidEthereumAddress(recipient)) {
+      throw new Error(`Invalid recipient address: ${recipient}`);
+    }
+    if (!isValidEthereumAddress(sender)) {
+      throw new Error(`Invalid sender address: ${sender}`);
+    }
+    if (amount <= 0) {
+      throw new Error('Amount must be greater than 0');
+    }
+    const resolvedRecipient = ethers.getAddress(recipient);
+    const resolvedSender = ethers.getAddress(sender);
+    const valueInWei = ethers.parseEther(amount.toString());
+    if (gasLimit !== undefined && (gasLimit < 21000 || gasLimit > 10000000)) {
+      throw new Error('Gas limit must be between 21,000 and 10,000,000');
+    }
+    if (gasPrice !== undefined) {
+      try {
+        const gasPriceBigInt = BigInt(gasPrice);
+        if (gasPriceBigInt <= 0) {
+          throw new Error('Gas price must be greater than 0');
+        }
+      } catch {
+        throw new Error('Invalid gas price format');
       }
+    }
+    if (nonce !== undefined && nonce < 0) {
+      throw new Error('Nonce must be non-negative');
+    }
 
-      // Validate and checksum the addresses
-      const resolvedRecipient = ethers.getAddress(recipient);
-      const resolvedSender = ethers.getAddress(sender);
-      const valueInWei = ethers.parseEther(amount.toString());
+    const txData = {
+      to: resolvedRecipient,
+      value: valueInWei.toString(),
+      chainId,
+      gasLimit: gasLimit?.toString(),
+      gasPrice: gasPrice,
+      nonce: nonce,
+    };
 
-      // Create transaction object with proper types
-      const txData = {
+    let serializedTx: string;
+    try {
+      const transactionFields: any = {
         to: resolvedRecipient,
         value: valueInWei,
-        chainId,
-        gasLimit: gasLimit ? BigInt(gasLimit) : undefined,
-        gasPrice: gasPrice ? BigInt(gasPrice) : undefined,
-        nonce: nonce,
+        chainId: chainId,
       };
 
-      // Create serialized transaction
-      let serializedTx: string;
-      try {
-        const transaction = ethers.Transaction.from({
-          to: resolvedRecipient,
-          value: valueInWei,
-          gasLimit: txData.gasLimit,
-          gasPrice: txData.gasPrice,
-          nonce: txData.nonce,
-          chainId: chainId,
-        });
-        serializedTx = transaction.serialized;
-      } catch (serializationError) {
-        // Fallback if serialization fails
-        serializedTx =
-          '0x' + Buffer.from(JSON.stringify(txData)).toString('hex');
-      }
+      if (gasLimit) transactionFields.gasLimit = BigInt(gasLimit);
+      if (gasPrice) transactionFields.gasPrice = BigInt(gasPrice);
+      if (nonce !== undefined) transactionFields.nonce = nonce;
 
-      return {
-        TxData: {
-          to: resolvedRecipient,
-          value: valueInWei.toString(),
-          gasLimit: gasLimit ? gasLimit.toString() : undefined,
-          gasPrice: gasPrice || undefined,
-          nonce: nonce,
-          chainId: chainId,
-        },
-        serializedTx,
-        message:
-          'Unsigned transaction prepared. Click to sign with your connected wallet.',
-        amount,
-        recipient: resolvedRecipient,
-        sender: resolvedSender,
-        gasLimit: gasLimit ?? null,
-        gasPrice: gasPrice ?? null,
-        nonce: nonce ?? null,
-        chainId,
-      };
-    } catch (error: any) {
-      return { error: `Failed to create transaction: ${error.message}` };
+      const transaction = ethers.Transaction.from(transactionFields);
+      serializedTx = transaction.serialized;
+    } catch (serializationError) {
+      console.warn(
+        'Serialization failed, using fallback method:',
+        serializationError,
+      );
+      serializedTx =
+        '0x' +
+        Buffer.from(
+          JSON.stringify(txData, (key, value) =>
+            typeof value === 'bigint' ? value.toString() : value,
+          ),
+        ).toString('hex');
     }
+
+    return {
+      TxData: txData,
+      serializedTx,
+      message: `Unsigned ${currency} transaction prepared for ${chainName}. Click to sign with your connected wallet.`,
+      amount,
+      recipient: resolvedRecipient,
+      sender: resolvedSender,
+      gasLimit: gasLimit ?? null,
+      gasPrice: gasPrice ?? null,
+      nonce: nonce ?? null,
+      chainId,
+      chainName,
+      currency,
+    };
+  } catch (error: any) {
+    return {
+      error: `Failed to create ${chainName} transaction: ${error.message}`,
+      chainId,
+      chainName,
+      currency,
+    };
+  }
+}
+
+export const transferethereummainnet = tool({
+  description:
+    'Create an unsigned transaction for sending ETH on Ethereum Mainnet (Chain ID: 1). Send native ETH tokens with serialized transaction data.',
+  parameters: z.object({
+    recipient: z
+      .string()
+      .describe(
+        'Recipient or users wallet address (must be a valid Ethereum address)',
+      ),
+    amount: z.number().positive().describe('Amount in ETH (must be positive)'),
+    sender: z
+      .string()
+      .describe(
+        'Sender wallet address (must be a valid Ethereum address), address where suer wants to send money',
+      ),
+    gasLimit: z
+      .number()
+      .int()
+      .min(21000)
+      .max(10000000)
+      .optional()
+      .describe('Optional gas limit (21000-10000000)'),
+    gasPrice: z
+      .string()
+      .optional()
+      .describe('Optional gas price in wei (as string)'),
+    nonce: z
+      .number()
+      .int()
+      .min(0)
+      .optional()
+      .describe('Optional nonce (non-negative integer)'),
+  }),
+  execute: async ({ recipient, amount, sender, gasLimit, gasPrice, nonce }) => {
+    return createTransactionData(
+      recipient,
+      amount,
+      sender,
+      1,
+      'Ethereum Mainnet',
+      'ETH',
+      gasLimit,
+      gasPrice,
+      nonce,
+    );
+  },
+});
+
+export const transferethereumsepolia = tool({
+  description:
+    'Create an unsigned transaction for sending ETH on Ethereum Sepolia Testnet (Chain ID: 11155111). Send testnet ETH tokens with serialized transaction data.',
+  parameters: z.object({
+    recipient: z
+      .string()
+      .describe('Recipient wallet address (must be a valid Ethereum address)'),
+    amount: z.number().positive().describe('Amount in ETH (must be positive)'),
+    sender: z
+      .string()
+      .describe('Sender wallet address (must be a valid Ethereum address)'),
+    gasLimit: z
+      .number()
+      .int()
+      .min(21000)
+      .max(10000000)
+      .optional()
+      .describe('Optional gas limit (21000-10000000)'),
+    gasPrice: z
+      .string()
+      .optional()
+      .describe('Optional gas price in wei (as string)'),
+    nonce: z
+      .number()
+      .int()
+      .min(0)
+      .optional()
+      .describe('Optional nonce (non-negative integer)'),
+  }),
+  execute: async ({ recipient, amount, sender, gasLimit, gasPrice, nonce }) => {
+    return createTransactionData(
+      recipient,
+      amount,
+      sender,
+      11155111,
+      'Ethereum Sepolia',
+      'ETH',
+      gasLimit,
+      gasPrice,
+      nonce,
+    );
+  },
+});
+
+export const transfermonadtestnet = tool({
+  description:
+    'Create an unsigned transaction for sending MON on Monad Testnet (Chain ID: 10143). Send native MON tokens with serialized transaction data.',
+  parameters: z.object({
+    recipient: z
+      .string()
+      .describe('Recipient wallet address (must be a valid Ethereum address)'),
+    amount: z.number().positive().describe('Amount in MON (must be positive)'),
+    sender: z
+      .string()
+      .describe('Sender wallet address (must be a valid Ethereum address)'),
+    gasLimit: z
+      .number()
+      .int()
+      .min(21000)
+      .max(10000000)
+      .optional()
+      .describe('Optional gas limit (21000-10000000)'),
+    gasPrice: z
+      .string()
+      .optional()
+      .describe('Optional gas price in wei (as string)'),
+    nonce: z
+      .number()
+      .int()
+      .min(0)
+      .optional()
+      .describe('Optional nonce (non-negative integer)'),
+  }),
+  execute: async ({ recipient, amount, sender, gasLimit, gasPrice, nonce }) => {
+    return createTransactionData(
+      recipient,
+      amount,
+      sender,
+      10143,
+      'Monad Testnet',
+      'MON',
+      gasLimit,
+      gasPrice,
+      nonce,
+    );
   },
 });

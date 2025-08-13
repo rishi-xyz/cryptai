@@ -24,7 +24,7 @@ export const ViewMessages = ({
 }) => {
   return (
     <motion.div
-      className={`flex w-full flex-row gap-4 px-4 first-of-type:pt-20 md:w-[500px] md:px-0`}
+      className="flex w-full flex-row gap-4 px-4 first-of-type:pt-20 md:w-[500px] md:px-0"
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
     >
@@ -57,7 +57,11 @@ export const ViewMessages = ({
                       <GetBalance RecievedResult={result} />
                     ) : toolName === 'transfersui' ? (
                       <TransferSui RecievedResult={result} />
-                    ) : toolName === 'transferevm' ? (
+                    ) : toolName === 'transferethereummainnet' ? (
+                      <TransferEVM RecievedResult={result} />
+                    ) : toolName === 'transferethereumsepolia' ? (
+                      <TransferEVM RecievedResult={result} />
+                    ) : toolName === 'transfermonadtestnet' ? (
                       <TransferEVM RecievedResult={result} />
                     ) : (
                       <div>{JSON.stringify(result, null, 2)}</div>
@@ -71,7 +75,11 @@ export const ViewMessages = ({
                       <GetBalance />
                     ) : toolName === 'transfersui' ? (
                       <TransferSui />
-                    ) : null}
+                    ) : (
+                      (toolName === 'transferethereummainnet' ||
+                        toolName === 'transferethereumsepolia' ||
+                        toolName === 'transfermonadtestnet') && <TransferEVM />
+                    )}
                   </div>
                 );
               }

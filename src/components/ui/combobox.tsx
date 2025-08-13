@@ -17,7 +17,7 @@ import {
   PopoverTrigger,
 } from '@/src/components/ui/popover';
 import { toast } from 'sonner';
-import { mainnet, monadTestnet, sepolia } from '@reown/appkit/networks';
+import { mainnet, monadTestnet, sepolia, solana } from '@reown/appkit/networks';
 import {
   createAppKit,
   useAppKitNetwork,
@@ -29,13 +29,6 @@ import { modal } from '@/src/context';
 import { useWalletStore } from '@/src/store/wallet-store';
 
 const chains: chainsI[] = [
-  {
-    id: mainnet.id,
-    value: 'Ethereum',
-    label: mainnet.name,
-    namespace: 'eip155',
-    caipNetwork: mainnet,
-  },
   {
     id: sepolia.id,
     value: 'Sepolia',
@@ -49,6 +42,22 @@ const chains: chainsI[] = [
     label: monadTestnet.name,
     namespace: 'eip155',
     caipNetwork: monadTestnet,
+  },
+  {
+    id: Number(solana.id),
+    value: 'Solana',
+    label: solana.name,
+    namespace: solana.chainNamespace,
+    caipNetwork: solana,
+    developemnt: true,
+  },
+  {
+    id: mainnet.id,
+    value: 'Ethereum',
+    label: mainnet.name,
+    namespace: 'eip155',
+    caipNetwork: mainnet,
+    developemnt: true,
   },
 ];
 
@@ -318,9 +327,16 @@ export function ComboboxDemo() {
                   key={chain.value}
                   value={chain.value}
                   onSelect={selectHandler}
-                  disabled={isLoading}
+                  disabled={isLoading || chain.developemnt} // disable if coming soon
                 >
-                  {chain.label}
+                  <span className="flex items-center gap-2">
+                    {chain.label}
+                    {chain.developemnt && (
+                      <span className="text rounded-full bg-white px-2 py-0.5 text-red-800">
+                        Coming Soon
+                      </span>
+                    )}
+                  </span>
                   <Check
                     className={cn(
                       'ml-auto',

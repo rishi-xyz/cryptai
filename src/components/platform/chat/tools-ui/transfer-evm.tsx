@@ -1,271 +1,239 @@
 'use client';
+
 import { useState } from 'react';
 import { Button } from '@/src/components/ui/button';
 import {
   Provider,
   useAppKitProvider,
   useAppKitAccount,
+  useAppKitNetwork,
 } from '@reown/appkit/react';
 import { BrowserProvider } from 'ethers';
 import { toast } from 'sonner';
 
+interface TransferResult {
+  TxData: {
+    to: string;
+    value: string;
+    chainId: number;
+    gasLimit?: string;
+    gasPrice?: string;
+    nonce?: number;
+  };
+  serializedTx: string;
+  message: string;
+  amount: number;
+  recipient: string;
+  sender: string;
+  chainId: number;
+  chainName: string;
+  currency: string;
+  error?: string;
+}
+
 export const TransferEVM = ({
   RecievedResult,
 }: {
-  RecievedResult?: {
-    TxData: any;
-    serializedTx: string;
-    message: string;
-    amount: number;
-    recipient: string;
-    sender: string;
-    chainId: number;
-  };
+  RecievedResult?: TransferResult;
 }) => {
   const [showRaw, setShowRaw] = useState(false);
-  const [showSerialized, setShowSerialized] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [isProcessing, setIsProcessing] = useState(false);
   const { walletProvider } = useAppKitProvider<Provider>('eip155');
   const { address, isConnected } = useAppKitAccount();
+  const { chainId } = useAppKitNetwork();
 
   if (!RecievedResult) return null;
 
-  const { TxData, serializedTx, message, amount, recipient, sender, chainId } =
+  if (RecievedResult.error) {
+    return (
+      <div className="space-y-4 rounded-lg border border-red-700 bg-red-900/20 p-4 text-sm text-red-200 shadow-lg">
+        <h3 className="text-lg font-semibold text-red-400">
+          Transaction Error
+        </h3>
+        <p className="text-red-300">{RecievedResult.error}</p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigator.clipboard.writeText(RecievedResult.error!)}
+        >
+          Copy Full Error
+        </Button>
+      </div>
+    );
+  }
+
+  const { TxData, message, amount, recipient, chainName, currency } =
     RecievedResult;
 
-  const handleSignTransaction = async () => {
+  const handleApprove = async () => {
     if (!isConnected || !address) {
       toast.error('Please connect your wallet first');
       return;
     }
-
     if (!walletProvider) {
       toast.error('Wallet provider not available');
       return;
     }
 
-    setIsLoading(true);
+    setIsProcessing(true);
 
     try {
-      // Create ethers provider from the wallet provider
       const ethersProvider = new BrowserProvider(walletProvider);
       const signer = await ethersProvider.getSigner();
+      const from = await signer.getAddress();
+      const network = await ethersProvider.getNetwork();
+      console.log('Approve transation network id :', network.chainId);
+      if (Number(chainId) !== TxData.chainId) {
+        toast.error('Wrong network', {
+          description: `Please switch to ${chainName} (Chain ID: ${TxData.chainId})`,
+        });
+        return;
+      }
 
-      // This will trigger the wallet popup for signing
-      const txResponse = await signer.sendTransaction({
+      const [feeData] = await Promise.all([ethersProvider.getFeeData()]);
+
+      let gasLimit: bigint;
+      try {
+        gasLimit = await ethersProvider.estimateGas({
+          from,
+          to: TxData.to,
+          value: TxData.value,
+        });
+        gasLimit = (gasLimit * BigInt(120)) / BigInt(100);
+      } catch {
+        gasLimit = BigInt(21000); // fallback
+      }
+
+      const transactionRequest: any = {
         to: TxData.to,
         value: TxData.value,
-        gasLimit: TxData.gasLimit,
-        gasPrice: TxData.gasPrice,
-        nonce: TxData.nonce,
         chainId: TxData.chainId,
+        gasLimit,
+      };
+
+      if (feeData.maxFeePerGas && feeData.maxPriorityFeePerGas) {
+        transactionRequest.maxFeePerGas = feeData.maxFeePerGas;
+        transactionRequest.maxPriorityFeePerGas = feeData.maxPriorityFeePerGas;
+      } else if (feeData.gasPrice) {
+        transactionRequest.gasPrice = feeData.gasPrice;
+      }
+
+      if (TxData.gasLimit) {
+        transactionRequest.gasLimit = BigInt(TxData.gasLimit);
+      }
+      if (TxData.gasPrice) {
+        transactionRequest.gasPrice = BigInt(TxData.gasPrice);
+        delete transactionRequest.maxFeePerGas;
+        delete transactionRequest.maxPriorityFeePerGas;
+      }
+      if (TxData.nonce !== undefined) {
+        transactionRequest.nonce = TxData.nonce;
+      }
+
+      toast.info('Sending transaction...', {
+        description: 'Please confirm in your wallet',
       });
 
-      toast.success('Transaction Signed & Sent!', {
+      const txResponse = await signer.sendTransaction(transactionRequest);
+
+      toast.success('Transaction Sent!', {
         description: `Hash: ${txResponse.hash}`,
         action: {
           label: 'Copy Hash',
-          onClick: () => {
-            navigator.clipboard.writeText(txResponse.hash).then(() => {
-              toast.success('Transaction hash copied!');
-            });
-          },
+          onClick: () => navigator.clipboard.writeText(txResponse.hash),
         },
       });
 
-      // Wait for confirmation
+      toast.info('Waiting for confirmation...');
       const receipt = await txResponse.wait();
 
       if (receipt?.status === 1) {
         toast.success('Transaction Confirmed!', {
-          description: `Block: ${receipt.blockNumber}`,
+          description: `Successfully sent ${amount} ${currency} to ${recipient}`,
         });
       } else {
-        toast.error('Transaction failed');
+        toast.error('Transaction failed during confirmation');
       }
     } catch (err: any) {
       console.error('Transaction error:', err);
+      const shortMessage = err?.reason || err?.message || 'Transaction failed';
+      const fullError =
+        typeof err === 'object' ? JSON.stringify(err, null, 2) : String(err);
 
-      // Handle user rejection
-      if (err.code === 4001 || err.message?.includes('User rejected')) {
-        toast.error('Transaction rejected by user');
-      } else {
-        toast.error('Transaction Failed', {
-          description:
-            err.reason || err.message || 'Failed to execute transaction',
-        });
-      }
+      toast.error(shortMessage, {
+        action: {
+          label: 'Copy Full Error',
+          onClick: () => navigator.clipboard.writeText(fullError),
+        },
+      });
     } finally {
-      setIsLoading(false);
+      setIsProcessing(false);
     }
-  };
-
-  const getChainName = (chainId: number) => {
-    const chains: { [key: number]: string } = {
-      1: 'Ethereum Mainnet',
-      11155111: 'Sepolia Testnet',
-      137: 'Polygon',
-      80001: 'Mumbai Testnet',
-      56: 'BSC',
-      97: 'BSC Testnet',
-      43114: 'Avalanche',
-      43113: 'Fuji Testnet',
-      250: 'Fantom',
-      4002: 'Fantom Testnet',
-      42161: 'Arbitrum One',
-      421614: 'Arbitrum Sepolia',
-      10: 'Optimism',
-      11155420: 'Optimism Sepolia',
-      8453: 'Base',
-      84532: 'Base Sepolia',
-    };
-    return chains[chainId] || `Chain ID ${chainId}`;
-  };
-
-  const getNativeTokenSymbol = (chainId: number) => {
-    const symbols: { [key: number]: string } = {
-      1: 'ETH',
-      11155111: 'ETH',
-      137: 'MATIC',
-      80001: 'MATIC',
-      56: 'BNB',
-      97: 'BNB',
-      43114: 'AVAX',
-      43113: 'AVAX',
-      250: 'FTM',
-      4002: 'FTM',
-      42161: 'ETH',
-      421614: 'ETH',
-      10: 'ETH',
-      11155420: 'ETH',
-      8453: 'ETH',
-      84532: 'ETH',
-    };
-    return symbols[chainId] || 'ETH';
   };
 
   return (
     <div className="space-y-4 rounded-lg border border-zinc-700 bg-zinc-900 p-4 text-sm text-zinc-200 shadow-lg">
-      {/* Header */}
       <div>
-        <h3 className="text-lg font-semibold text-blue-400">
-          Transfer {getNativeTokenSymbol(chainId)} Transaction
+        <h3 className="text-lg font-semibold text-fuchsia-400">
+          Transfer {currency} Transaction
         </h3>
         <p className="text-zinc-400">{message}</p>
+        <p className="text-xs text-zinc-500">
+          {chainName} (Chain ID: {TxData.chainId})
+        </p>
       </div>
 
-      {/* Connection Status */}
-      <div className="flex items-center gap-2 text-xs">
-        <div
-          className={`h-2 w-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`}
-        ></div>
-        <span className={isConnected ? 'text-green-400' : 'text-red-400'}>
-          {isConnected
-            ? `Connected: ${address?.slice(0, 6)}...${address?.slice(-4)}`
-            : 'Wallet not connected'}
-        </span>
-      </div>
-
-      {/* Transaction Summary */}
-      <div className="space-y-2">
-        <h4 className="font-semibold text-zinc-300">Transaction Summary</h4>
-        <div className="space-y-1 text-zinc-400">
-          <p>
-            <span className="text-zinc-500">Network:</span>{' '}
-            <span className="font-medium text-white">
-              {getChainName(chainId)}
-            </span>
-          </p>
-          <p>
-            <span className="text-zinc-500">From:</span>{' '}
-            <span className="font-mono text-xs break-all text-white">
-              {sender}
-            </span>
-          </p>
-          <p>
-            <span className="text-zinc-500">To:</span>{' '}
-            <span className="font-mono text-xs break-all text-white">
-              {recipient}
-            </span>
-          </p>
-          <p>
-            <span className="text-zinc-500">Amount:</span>{' '}
-            <span className="font-medium text-white">
-              {amount} {getNativeTokenSymbol(chainId)}
-            </span>
-          </p>
-        </div>
-      </div>
-
-      {/* Raw Transaction Data */}
       <div>
         <h4 className="flex items-center justify-between font-semibold text-zinc-300">
-          Transaction Object
+          Transaction Data (Raw)
           <Button
             variant="ghost"
-            className="px-2 py-0 text-xs hover:bg-zinc-800"
-            onClick={() => setShowRaw(!showRaw)}
+            className="px-2 py-0 text-xs"
+            onClick={() => setShowRaw((prev) => !prev)}
           >
             {showRaw ? 'Hide' : 'Show'}
           </Button>
         </h4>
         {showRaw && (
-          <pre className="mt-2 overflow-x-auto rounded-md bg-zinc-800 p-2 text-xs break-words whitespace-pre-wrap text-yellow-300">
-            {JSON.stringify(
-              TxData,
-              (key, value) =>
-                typeof value === 'bigint' ? value.toString() : value,
-              2,
-            )}
+          <pre className="overflow-x-auto rounded-md bg-zinc-800 p-2 text-xs break-words whitespace-pre-wrap text-yellow-300">
+            {JSON.stringify(TxData, null, 2)}
           </pre>
         )}
       </div>
 
-      {/* Serialized Transaction */}
       <div>
-        <h4 className="flex items-center justify-between font-semibold text-zinc-300">
-          Serialized Transaction
-          <Button
-            variant="ghost"
-            className="px-2 py-0 text-xs hover:bg-zinc-800"
-            onClick={() => setShowSerialized(!showSerialized)}
-          >
-            {showSerialized ? 'Hide' : 'Show'}
-          </Button>
-        </h4>
-        {showSerialized && (
-          <div className="mt-2 rounded-md bg-zinc-800 p-2">
-            <p className="font-mono text-xs break-all text-green-300">
-              {serializedTx}
-            </p>
-          </div>
-        )}
+        <h4 className="font-semibold text-zinc-300">Summary</h4>
+        <div className="space-y-1 text-zinc-400">
+          <p>
+            <span className="text-zinc-500">Amount:</span>{' '}
+            <span className="font-medium text-white">
+              {amount} {currency}
+            </span>
+          </p>
+          <p>
+            <span className="text-zinc-500">To:</span>{' '}
+            <span className="font-mono text-xs break-words text-white">
+              {recipient}
+            </span>
+          </p>
+          <p>
+            <span className="text-zinc-500">Network:</span>{' '}
+            <span className="text-white">{chainName}</span>
+          </p>
+        </div>
       </div>
 
-      {/* Sign Button */}
       <Button
-        className="w-full bg-blue-500 transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-zinc-600"
-        onClick={handleSignTransaction}
-        disabled={isLoading || !isConnected}
+        className="w-full bg-fuchsia-500 transition hover:bg-fuchsia-600 disabled:bg-zinc-600 disabled:text-zinc-400"
+        onClick={handleApprove}
+        disabled={!isConnected || isProcessing}
       >
-        {isLoading ? (
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-            Processing...
-          </div>
-        ) : !isConnected ? (
-          'Connect Wallet to Sign'
-        ) : (
-          'Sign & Send Transaction'
-        )}
+        {!isConnected
+          ? 'Connect Wallet'
+          : isProcessing
+            ? 'Processing...'
+            : 'Approve Transaction'}
       </Button>
-
-      {/* Warning */}
-      <p className="text-center text-xs text-zinc-500">
-        Clicking the button above will open your wallet to sign and broadcast
-        this transaction
-      </p>
     </div>
   );
 };

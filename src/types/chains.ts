@@ -16,4 +16,5 @@ export interface chainsI {
   label: string;
   namespace: ChainNamespace;
   caipNetwork: AppKitNetwork;
+  developemnt?: boolean;
 }
