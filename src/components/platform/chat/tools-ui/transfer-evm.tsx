@@ -142,6 +142,7 @@ export const TransferEVM = ({
           label: 'Copy Hash',
           onClick: () => navigator.clipboard.writeText(txResponse.hash),
         },
+        duration: 10,
       });
 
       toast.info('Waiting for confirmation...');

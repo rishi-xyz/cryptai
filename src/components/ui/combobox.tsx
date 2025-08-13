@@ -88,13 +88,6 @@ export function ComboboxDemo() {
         chainId,
         chainName,
       });
-
-      console.log('Chain info updated in store:', {
-        address,
-        chainId,
-        chainName,
-        caipNetwork,
-      });
     }
   }, [caipNetwork, address, isConnected, setWalletData]);
 
@@ -140,12 +133,6 @@ export function ComboboxDemo() {
           : selectedChain.id;
 
         setWalletData({
-          address,
-          chainId,
-          chainName: selectedChain.label,
-        });
-
-        console.log('Solana chain switched and store updated:', {
           address,
           chainId,
           chainName: selectedChain.label,
@@ -201,12 +188,6 @@ export function ComboboxDemo() {
           : selectedChain.id;
 
         setWalletData({
-          address,
-          chainId,
-          chainName: selectedChain.label,
-        });
-
-        console.log('EVM chain switched and store updated:', {
           address,
           chainId,
           chainName: selectedChain.label,

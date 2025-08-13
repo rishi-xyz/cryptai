@@ -23,10 +23,6 @@ export function Chat({
 }) {
   const userWallet = useUserWalletData();
 
-  console.log('sender', userWallet.useraddress);
-  console.log('chain id', userWallet.chainId);
-  console.log('chain name', userWallet.chainName);
-
   // Memoize the body to prevent infinite re-renders
   const chatBody = useMemo(
     () => ({
