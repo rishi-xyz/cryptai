@@ -1,6 +1,6 @@
 # CryptAI - Talk to the  Blockchain with AI
 
-CryptAI is a conversational web app that allows users to interact with the any using natural language  just like talking to ChatGPT.
+CryptAI is a conversational web app that allows users to interact with the any Blockchain using natural language  just like talking to ChatGPT.
 
 Built with **Next.js**, **Vercel AI SDK**, **Google Gemini**, CryptAI makes blockchain interactions simple, accessible, and developer-friendly.
 
@@ -24,8 +24,6 @@ Built with **Next.js**, **Vercel AI SDK**, **Google Gemini**, CryptAI makes bloc
 ##  Tech Stack
 
 - **Framework**: [Next.js](https://nextjs.org)
-- **Blockchain SDK**: [`@mysten/sui.js`](https://github.com/MystenLabs/sui)
-- **Wallet Integration**: [`@suiet/wallet-kit`](https://github.com/suiet/wallet-kit)
 - **AI Platform**: [Google Gemini API](https://ai.google.dev/) via [Vercel AI SDK](https://vercel.com/blog/introducing-vercel-ai-sdk)
 - **Deployment**: [Vercel](https://vercel.com)
 
