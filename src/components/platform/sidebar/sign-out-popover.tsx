@@ -6,9 +6,11 @@ import { SidebarMenu, SidebarMenuItem } from '../../ui/sidebar';
 import { Button } from '../../ui/button';
 import { LogOut } from 'lucide-react';
 import { User } from 'next-auth';
-import { handleSignout } from '../../auth/utils';
+import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export const SignOutPopOver = ({ user }: { user: User | undefined }) => {
+  const router = useRouter();
   return user ? (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -50,7 +52,18 @@ export const SignOutPopOver = ({ user }: { user: User | undefined }) => {
                   variant={'fushia'}
                   size={'default'}
                   className="mt-2"
-                  onClick={handleSignout}
+                  onClick={async () => {
+                    try {
+                      await signOut({
+                        redirect: false,
+                        callbackUrl: '/',
+                      });
+                      router.push('/');
+                    } catch (error) {
+                      console.error(error);
+                      router.push('/');
+                    }
+                  }}
                 >
                   <LogOut />
                   <span>Sign Out</span>
