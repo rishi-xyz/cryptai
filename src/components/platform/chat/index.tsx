@@ -1,6 +1,6 @@
 'use client';
 
-import { Attachment, Message } from 'ai';
+import { type UIMessage } from 'ai';
 import { useChat } from '@ai-sdk/react';
 import { useScrollToBottom } from '@/src/hooks/use-scrolltobottom';
 import { useState, useMemo } from 'react';
@@ -10,6 +10,12 @@ import { MultimodalInput } from './multimodalinput';
 import { ChatHeader } from './chat-header';
 import { useUserWalletData } from '@/src/store/wallet-store';
 
+export type Attachment = {
+  url: string;
+  name?: string;
+  contentType?: string;
+};
+
 export function Chat({
   id,
   initialMessages,
@@ -17,13 +23,12 @@ export function Chat({
   isReadonly,
 }: {
   id: string;
-  initialMessages: Array<Message>;
+  initialMessages: Array<UIMessage>;
   selectedModelId: string;
   isReadonly: boolean;
 }) {
   const userWallet = useUserWalletData();
 
-  // Memoize the body to prevent infinite re-renders
   const chatBody = useMemo(
     () => ({
       id,
@@ -34,29 +39,26 @@ export function Chat({
     [id, userWallet.useraddress, userWallet.chainId, userWallet.chainName],
   );
 
-  const { messages, handleSubmit, input, setInput, append, isLoading, stop } =
-    useChat({
-      id,
-      body: chatBody,
-      initialMessages,
-      maxSteps: 10,
-      onFinish: () => {
-        window.history.replaceState({}, '', `/chat/${id}`);
-      },
-    });
+  const { messages, sendMessage, stop, status } = useChat({
+    id,
+    messages: initialMessages,
+    onFinish: () => {
+      window.history.replaceState({}, '', `/chat/${id}`);
+    },
+  });
 
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
+  const [input, setInput] = useState('');
+  const isLoading = status === 'submitted' || status === 'streaming';
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      {/* Sticky header */}
       <div className="bg-background sticky top-0 z-10 border-b border-zinc-800">
         <ChatHeader selectedModelId={selectedModelId} isReadonly={isReadonly} />
       </div>
 
-      {/* Scrollable message area */}
       <div
         ref={messagesContainerRef}
         className="flex-1 overflow-y-auto px-2 py-4 md:px-4"
@@ -64,13 +66,7 @@ export function Chat({
         <div className="flex flex-col items-center gap-4">
           {messages.length === 0 && <Overview />}
           {messages.map((message) => (
-            <ViewMessages
-              key={message.id}
-              role={message.role}
-              content={message.content}
-              attachments={message.experimental_attachments}
-              toolInvocations={message.toolInvocations}
-            />
+            <ViewMessages key={message.id} message={message} />
           ))}
           <div
             ref={messagesEndRef}
@@ -79,19 +75,18 @@ export function Chat({
         </div>
       </div>
 
-      {/* Sticky input */}
       <div className="bg-background sticky bottom-0 z-10 border-t border-zinc-800 px-4 py-2 md:px-0">
         <form className="mx-auto flex w-full max-w-[500px] flex-row items-end gap-2">
           <MultimodalInput
             input={input}
             setInput={setInput}
-            handleSubmit={handleSubmit}
+            sendMessage={sendMessage}
             isLoading={isLoading}
             stop={stop}
             attachments={attachments}
             setAttachments={setAttachments}
             messages={messages}
-            append={append}
+            body={chatBody}
           />
         </form>
       </div>

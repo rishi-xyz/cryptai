@@ -5,7 +5,7 @@ import { Testnetclient } from './utils';
 export const getbalance = tool({
   description:
     'Get the list of all balances for a given wallet address, including coin metadata.',
-  parameters: z.object({
+  inputSchema: z.object({
     address: z.string().describe('The wallet address to fetch balances for'),
   }),
   execute: async ({ address }: { address: string }) => {

@@ -1,12 +1,12 @@
 import { auth } from '@/app/(auth)/auth';
-import { geminiProModel } from '@/src/ai';
+import { openRouterProModel } from '@/src/ai';
 import { systemInstructions } from '@/src/ai/system-instructions';
 import { ALLTools } from '@/src/ai/tools';
 import { saveChat } from '@/src/database/queries';
-import { convertToCoreMessages, Message, streamText } from 'ai';
+import { convertToModelMessages, streamText, type UIMessage } from 'ai';
 
 export async function POST(request: Request) {
-  const { id, messages }: { id: string; messages: Array<Message> } =
+  const { id, messages }: { id: string; messages: Array<UIMessage> } =
     await request.json();
 
   const session = await auth();
@@ -15,29 +15,14 @@ export async function POST(request: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  const coreMessages = convertToCoreMessages(messages).filter(
-    (message) => message.content.length > 0,
-  );
+  const modelMessages = await convertToModelMessages(messages);
 
   const result = await streamText({
-    model: geminiProModel,
+    model: openRouterProModel,
     system: systemInstructions,
-    messages: coreMessages,
+    messages: modelMessages,
     onError: (err) => {
       console.log(err.error);
-    },
-    onFinish: async ({ response }) => {
-      if (session.user && session.user.id) {
-        try {
-          await saveChat({
-            id,
-            messages: [...coreMessages, ...response.messages],
-            userId: session.user.id,
-          });
-        } catch (error) {
-          console.error('Failed to save chat', error);
-        }
-      }
     },
     tools: ALLTools,
     experimental_telemetry: {
@@ -46,5 +31,19 @@ export async function POST(request: Request) {
     },
   });
 
-  return result.toDataStreamResponse({});
+  return result.toUIMessageStreamResponse({
+    onFinish: async ({ messages: uiMessages }) => {
+      if (session.user && session.user.id) {
+        try {
+          await saveChat({
+            id,
+            messages: uiMessages,
+            userId: session.user.id,
+          });
+        } catch (error) {
+          console.error('Failed to save chat', error);
+        }
+      }
+    },
+  });
 }

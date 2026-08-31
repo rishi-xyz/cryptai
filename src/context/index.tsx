@@ -19,9 +19,7 @@ export const metadata = {
   name: 'CryptAI',
   description: 'Talk to blockchain in Natural Language',
   url: 'https://cryptai-eight.vercel.app', // origin must match your domain & subdomain
-  icons: [
-    'https://drive.google.com/drive/folders/1-GKGLD2YQI2PlO5rtSwYTGPvegzubQWs?usp=sharing',
-  ],
+  icons: ['https://cryptai-eight.vercel.app/robot.png'],
 };
 
 // Create the modal

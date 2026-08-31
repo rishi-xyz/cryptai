@@ -116,7 +116,7 @@ function createTransactionData(
 export const transferethereummainnet = tool({
   description:
     'Create an unsigned transaction for sending ETH on Ethereum Mainnet (Chain ID: 1). Send native ETH tokens with serialized transaction data.',
-  parameters: z.object({
+  inputSchema: z.object({
     recipient: z
       .string()
       .describe(
@@ -145,8 +145,29 @@ export const transferethereummainnet = tool({
       .min(0)
       .optional()
       .describe('Optional nonce (non-negative integer)'),
-  }),
-  execute: async ({ recipient, amount, sender, gasLimit, gasPrice, nonce }) => {
+  }) as z.ZodType<{
+    recipient: string;
+    amount: number;
+    sender: string;
+    gasLimit?: number;
+    gasPrice?: string;
+    nonce?: number;
+  }>,
+  execute: async ({
+    recipient,
+    amount,
+    sender,
+    gasLimit,
+    gasPrice,
+    nonce,
+  }: {
+    recipient: string;
+    amount: number;
+    sender: string;
+    gasLimit?: number;
+    gasPrice?: string;
+    nonce?: number;
+  }) => {
     return createTransactionData(
       recipient,
       amount,
@@ -164,7 +185,7 @@ export const transferethereummainnet = tool({
 export const transferethereumsepolia = tool({
   description:
     'Create an unsigned transaction for sending ETH on Ethereum Sepolia Testnet (Chain ID: 11155111). Send testnet ETH tokens with serialized transaction data.',
-  parameters: z.object({
+  inputSchema: z.object({
     recipient: z
       .string()
       .describe('Recipient wallet address (must be a valid Ethereum address)'),
@@ -189,8 +210,29 @@ export const transferethereumsepolia = tool({
       .min(0)
       .optional()
       .describe('Optional nonce (non-negative integer)'),
-  }),
-  execute: async ({ recipient, amount, sender, gasLimit, gasPrice, nonce }) => {
+  }) as z.ZodType<{
+    recipient: string;
+    amount: number;
+    sender: string;
+    gasLimit?: number;
+    gasPrice?: string;
+    nonce?: number;
+  }>,
+  execute: async ({
+    recipient,
+    amount,
+    sender,
+    gasLimit,
+    gasPrice,
+    nonce,
+  }: {
+    recipient: string;
+    amount: number;
+    sender: string;
+    gasLimit?: number;
+    gasPrice?: string;
+    nonce?: number;
+  }) => {
     return createTransactionData(
       recipient,
       amount,
@@ -208,7 +250,7 @@ export const transferethereumsepolia = tool({
 export const transfermonadtestnet = tool({
   description:
     'Create an unsigned transaction for sending MON on Monad Testnet (Chain ID: 10143). Send native MON tokens with serialized transaction data.',
-  parameters: z.object({
+  inputSchema: z.object({
     recipient: z
       .string()
       .describe('Recipient wallet address (must be a valid Ethereum address)'),
@@ -233,8 +275,29 @@ export const transfermonadtestnet = tool({
       .min(0)
       .optional()
       .describe('Optional nonce (non-negative integer)'),
-  }),
-  execute: async ({ recipient, amount, sender, gasLimit, gasPrice, nonce }) => {
+  }) as z.ZodType<{
+    recipient: string;
+    amount: number;
+    sender: string;
+    gasLimit?: number;
+    gasPrice?: string;
+    nonce?: number;
+  }>,
+  execute: async ({
+    recipient,
+    amount,
+    sender,
+    gasLimit,
+    gasPrice,
+    nonce,
+  }: {
+    recipient: string;
+    amount: number;
+    sender: string;
+    gasLimit?: number;
+    gasPrice?: string;
+    nonce?: number;
+  }) => {
     return createTransactionData(
       recipient,
       amount,

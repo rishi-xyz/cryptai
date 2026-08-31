@@ -1,14 +1,16 @@
-import { google } from '@ai-sdk/google';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { wrapLanguageModel } from 'ai';
 
 import { customMiddleware } from './custom-middleware';
 
-export const geminiProModel = wrapLanguageModel({
-  model: google('gemini-2.5-flash-lite'),
+export const openrouter = createOpenRouter();
+
+export const openRouterProModel = wrapLanguageModel({
+  model: openrouter('google/gemini-2.5-flash'),
   middleware: customMiddleware,
 });
 
-export const geminiFlashModel = wrapLanguageModel({
-  model: google('gemini-2.5-flash'),
+export const openRouterFlashModel = wrapLanguageModel({
+  model: openrouter('anthropic/claude-3.5-sonnet'),
   middleware: customMiddleware,
 });

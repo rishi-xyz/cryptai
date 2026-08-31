@@ -1,3 +1,3 @@
-import { LanguageModelV1Middleware } from 'ai';
+import { LanguageModelMiddleware } from 'ai';
 
-export const customMiddleware: LanguageModelV1Middleware = {};
+export const customMiddleware: LanguageModelMiddleware = {};

@@ -6,7 +6,7 @@ import { MIST_PER_SUI } from '@mysten/sui/utils';
 export const transfersui = tool({
   description:
     "Create a SUI transfer transaction to be signed by the user's wallet. Optional parameters include sender, gas budget, gas price, expiration, and gas owner.",
-  parameters: z.object({
+  inputSchema: z.object({
     recipient: z.string().describe("The recipient's wallet address"),
     amount: z.number().describe('Amount of SUI to send'),
     sender: z.string().optional().describe('Optional sender address'),

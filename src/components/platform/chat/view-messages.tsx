@@ -1,8 +1,12 @@
 'use client';
 
-import { Attachment, ToolInvocation } from 'ai';
+import {
+  getToolName,
+  isDynamicToolUIPart,
+  isToolUIPart,
+  type UIMessage,
+} from 'ai';
 import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
 
 import { BotIcon, UserIcon } from 'lucide-react';
 import { Markdown } from './markdown';
@@ -11,17 +15,7 @@ import { GetBalance } from './tools-ui/get-balance-ui';
 import { TransferSui } from './tools-ui/transfer-sui';
 import { TransferEVM } from './tools-ui/transfer-evm';
 
-export const ViewMessages = ({
-  role,
-  content,
-  toolInvocations,
-  attachments,
-}: {
-  role: string;
-  content: string | ReactNode;
-  toolInvocations: Array<ToolInvocation> | undefined;
-  attachments?: Array<Attachment>;
-}) => {
+export const ViewMessages = ({ message }: { message: UIMessage }) => {
   return (
     <motion.div
       className="flex w-full flex-row gap-4 px-4 first-of-type:pt-20 md:w-[500px] md:px-0"
@@ -29,7 +23,7 @@ export const ViewMessages = ({
       animate={{ y: 0, opacity: 1 }}
     >
       <div className="flex size-[24px] shrink-0 flex-col items-center justify-center rounded-sm border p-1 text-zinc-500">
-        {role === 'assistant' ? (
+        {message.role === 'assistant' ? (
           <BotIcon className="text-fuchsia-500" />
         ) : (
           <UserIcon className="text-white" />
@@ -37,39 +31,53 @@ export const ViewMessages = ({
       </div>
 
       <div className="flex w-full flex-col gap-2">
-        {content && typeof content === 'string' && (
-          <div className="flex flex-col gap-4 text-zinc-300">
-            <Markdown>{content}</Markdown>
-          </div>
-        )}
+        {message.parts.map((part, index) => {
+          if (part.type === 'text') {
+            return (
+              <div key={index} className="flex flex-col gap-4 text-zinc-300">
+                <Markdown>{part.text}</Markdown>
+              </div>
+            );
+          }
 
-        {toolInvocations && (
-          <div className="flex flex-col gap-4">
-            {toolInvocations.map((toolInvocation) => {
-              const { toolName, toolCallId, state } = toolInvocation;
+          if (part.type === 'file') {
+            return (
+              <PreviewAttachment
+                key={index}
+                attachment={{
+                  url: part.url,
+                  name: part.filename,
+                  contentType: part.mediaType,
+                }}
+              />
+            );
+          }
 
-              if (state === 'result') {
-                const { result } = toolInvocation;
+          if (isToolUIPart(part) || isDynamicToolUIPart(part)) {
+            const toolName = getToolName(part);
+            const { state, toolCallId } = part;
+            const toolResult = (part as { output?: unknown }).output;
 
-                return (
+            return (
+              <div key={index} className="flex flex-col gap-4">
+                {state === 'output-available' ? (
                   <div key={toolCallId}>
                     {toolName === 'getbalance' ? (
-                      <GetBalance RecievedResult={result} />
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      <GetBalance RecievedResult={toolResult as any} />
                     ) : toolName === 'transfersui' ? (
-                      <TransferSui RecievedResult={result} />
-                    ) : toolName === 'transferethereummainnet' ? (
-                      <TransferEVM RecievedResult={result} />
-                    ) : toolName === 'transferethereumsepolia' ? (
-                      <TransferEVM RecievedResult={result} />
-                    ) : toolName === 'transfermonadtestnet' ? (
-                      <TransferEVM RecievedResult={result} />
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      <TransferSui RecievedResult={toolResult as any} />
+                    ) : toolName === 'transferethereummainnet' ||
+                      toolName === 'transferethereumsepolia' ||
+                      toolName === 'transfermonadtestnet' ? (
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      <TransferEVM RecievedResult={toolResult as any} />
                     ) : (
-                      <div>{JSON.stringify(result, null, 2)}</div>
+                      <div>{JSON.stringify(toolResult, null, 2)}</div>
                     )}
                   </div>
-                );
-              } else {
-                return (
+                ) : (
                   <div key={toolCallId} className="skeleton">
                     {toolName === 'getbalance' ? (
                       <GetBalance />
@@ -81,19 +89,13 @@ export const ViewMessages = ({
                         toolName === 'transfermonadtestnet') && <TransferEVM />
                     )}
                   </div>
-                );
-              }
-            })}
-          </div>
-        )}
+                )}
+              </div>
+            );
+          }
 
-        {attachments && (
-          <div className="flex flex-row gap-2">
-            {attachments.map((attachment) => (
-              <PreviewAttachment key={attachment.url} attachment={attachment} />
-            ))}
-          </div>
-        )}
+          return null;
+        })}
       </div>
     </motion.div>
   );
